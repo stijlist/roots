@@ -24,6 +24,12 @@ LinkedList* makeLinkedList(int value) {
     return list;
 }
 
+LinkedList* cons(int value, LinkedList *oldHead) {
+    LinkedList *newHead = makeLinkedList(value);
+    newHead->next = oldHead;
+    return newHead;
+}
+
 void printLinkedList(LinkedList *ll) {
     while(ll) {
         printf("%d\n", ll->value);
@@ -44,7 +50,8 @@ int main(int argc, char **argv) {
     // AST structure: environment is a pointer to a hash table
     // 
     LinkedList *ll = makeLinkedList(1);
-    printLinkedList(ll);
+    LinkedList *newHead = cons(2, ll);
+    printLinkedList(newHead);
     printf("Hello world");
 }
 
