@@ -1,24 +1,51 @@
 #include <stdlib.h>
 #include <stdio.h>
-#define SENTINEL 2147483648
 
-typedef struct _ll {
-    int value;
-    struct _ll *next;
-} LinkedList;
+typedef union {
+    int integer;
+    char *symbol;
+} Data;
 
-int nth(int n, LinkedList *list) {
+typedef enum {
+    Number,
+    Symbol,
+} TypeTag;
+
+typedef struct {
+    union {
+        int number;
+        char *symbol;
+    } data;
+    TypeTag tag;
+} Value;
+
+typedef struct _list {
+    Value value;
+    struct _list *next;
+} List;
+
+/* TODO: consider whether a pointer return type is correct here */
+Value* nth(int n, List *list) {
     if(n == 0)
-        return list->value;
+        return &(list->value);
     else if(list->next) 
         return nth(n-1, list->next);
     else
-        return SENTINEL;
+        return NULL;
 }
 
-LinkedList* makeLinkedList(int value) {
+Value number(int n) {
+    return (Value) { n, Number };
+}
+    
+
+List* parseList() {
+    return NULL;
+}
+
+List* makeList(Value value) {
     // malloc a linked list, return the pointer
-    LinkedList *list = malloc(sizeof(LinkedList));
+    List *list = malloc(sizeof(List));
     list->value = value;
     list->next = NULL;
     return list;
@@ -28,25 +55,36 @@ LinkedList* makeLinkedList(int value) {
  * and returns a pointer to the new head of the list without 
  * mutating or invalidating your old pointer to the head of the list
  */
-LinkedList* cons(int value, LinkedList *oldHead) {
-    LinkedList *newHead = makeLinkedList(value);
+List* cons(Value value, List *oldHead) {
+    List *newHead = makeList(value);
     newHead->next = oldHead;
     return newHead;
 }
 
-void printLinkedList(LinkedList *ll) {
-    while(ll) {
-        printf("%d ", ll->value);
-        ll = ll->next;
+void printValue(Value *v) {
+    switch (v->tag) {
+        case Number:
+            printf("%d ", v->data.number);
+            break;
+        case Symbol:
+            printf("%s ", v->data.symbol);
+            break;
+    }
+}
+void printList(List *l) {
+    while(l) {
+        printValue(&(l->value));
+        l = l->next;
     }
     printf("\n");
 }
 
 // example program: 
+// (car (cdr (quote a b c))) => b
+// example program: 
 // (define main (lambda (x y) (+ x y)))
 int main(int argc, char **argv) {
     // reader: split on () and whitespace to tokenize
-    // example program: (car (cdr (quote a b c))) => b
     // generate a data structure in memory to represent the AST
     // how does evaluation work? a pointer to environment and a 
     // pointer to function. call the function with that environment
@@ -55,14 +93,18 @@ int main(int argc, char **argv) {
     // AST structure: environment is a pointer to a hash table
     // 
     printf("Hello world\n");
-    LinkedList *ll = makeLinkedList(1);
+    List *l = makeList(number(2));
     
     printf("Testing the print function: ");
-    LinkedList *newHead = cons(2, ll);
-    printLinkedList(newHead);
-    printf("Testing the nth function\n");
-    int second = nth(1, newHead);
-    printf("The second element from the new head of the linked list is %d\n",
-            second);
+    List *newHead = cons(number(1), l);
+    printList(newHead);
+    printf("Testing the nth function:\n");
+    Value *first = nth(0, newHead);
+    printf("The first element from the head of the linked list is ");
+    printValue(first);
+    printf("\n");
+    Value *second = nth(1, newHead);
+    printf("The second element from the head of the linked list is ");
+    printValue(second);
+    return 0;
 }
-
