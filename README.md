@@ -1,8 +1,8 @@
 This is a toy lisp implementation that will be used to build towards a logic
-programming and functional programming system. I want to test how well I under-
-stand the mechanical implications of my chosen programming paradigms. I will 
-attempt to test the correctness of my programs using a quickcheck-style genera-
-tive tester. A simple roadmap:        
+programming and functional programming system. I want to test how well I
+understand the mechanical implications of my chosen programming paradigms. I
+will attempt to test the correctness of my programs using a quickcheck-style
+generative tester. A simple roadmap:
 
 - Implement cons, car, cdr, quote, cond, eq?, atom? in C
     - alternate branch: implement in Rust
