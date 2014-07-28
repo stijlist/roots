@@ -1,3 +1,3 @@
 all:
-	cc parse.c
+	cc -g parse.c
 	./a.out

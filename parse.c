@@ -68,7 +68,7 @@ bool is_alpha(char c) {
 }
 
 bool is_num(char c) {
-    return (c >= 30 && c <= 39);
+    return (c >= 48 && c <= 57);
 }
 
 enum ParseError {
@@ -83,50 +83,57 @@ typedef struct _parseresult {
     enum ParseError error;
 } ParseResult;
 
-ParseResult parsesym(char *cursor) {
+ParseResult* parsesym(char *cursor) {
+    ParseResult *result = malloc(sizeof(ParseResult));
     char *symbuf = malloc(MAX_SYMBOL_SIZE * sizeof(char));
     int i;
     for (i = 0; *cursor != ' '; cursor++, i++) 
         symbuf[i] = *cursor;
     while (*cursor == ' ') 
         cursor++;
-    return (ParseResult) { cursor, symbol(symbuf) };
+    *result = (ParseResult) { cursor, symbol(symbuf) };
+    return result;
 }
 
 int numval(char c) {
     return c - 30;
 }
 
-ParseResult parsenum(char *cursor) {
+ParseResult* parsenum(char *cursor) {
+    ParseResult *result = malloc(sizeof(ParseResult));
     int acc = 0;
     for (; is_num(*cursor); cursor++) 
         acc = acc * 10 + numval(*cursor);
-    return (ParseResult) { cursor, number(acc), None };
+    *result = (ParseResult) { cursor, number(acc), None };
+    return result;
 }
 
 // TODO: test this! forgot to TDD in my excitement
-ParseResult parselist(char *buf) {
+ParseResult* parselist(char *buf) {
     List *list = makeList(number(0)); // FIXME: make a nil value?
-    ParseResult result; 
+    ParseResult* result; 
     /* consume the initial paren given to parselist, recursively advance 
      * through tokens */
     char *cursor = buf;
+    // should this be a for loop? I'm incrementing cursor each round anyway
     while (!is_close_paren(*cursor)) {
+        cursor++;
         if (is_open_paren(*cursor)) {
             result = parselist(cursor); 
-            cursor = result.newcursor;
-            list->value = result.value;
+            cursor = result->newcursor;
+            list->value = result->value;
         } else if (is_alpha(*cursor)) {
             result = parsesym(cursor);
-            cursor = result.newcursor;
-            list->value = result.value;
+            cursor = result->newcursor;
+            list->value = result->value;
         } else if (is_num(*cursor)) {
             result = parsenum(cursor);
-            cursor = result.newcursor;
-            list->value = result.value;
+            cursor = result->newcursor;
+            list->value = result->value;
         }
     }
-    return result = (ParseResult) { cursor, (Value) { (Data) list, Cons } };
+    *result = (ParseResult) { cursor, (Value) { (Data) list, Cons } };
+    return result;
 }
 
 /* the cons function adds a new value to the head of a linked list 
@@ -141,7 +148,9 @@ List* cons(Value value, List *oldHead) {
     return newHead;
 }
 
-void printList(List *l);
+// printList and printValue are mutually recursive; if I switch to using
+// header files, I can remove this forward declaration
+void printList(List *l); 
 void printValue(Value *v) {
     switch (v->tag) {
         case Number:
@@ -155,6 +164,7 @@ void printValue(Value *v) {
             break;
     }
 }
+
 void printList(List *l) {
     while(l) {
         printValue(&(l->value));
@@ -190,5 +200,9 @@ int main(int argc, char **argv) {
     Value *second = nth(1, newHead);
     printf("The second element from the head of the linked list is ");
     printValue(second);
+
+    printf("Testing the parse function with (1 2 3)");
+    ParseResult *result1 = parselist("(1 2 3)");
+    printValue(&(result1->value));
     return 0;
 }
