@@ -147,7 +147,7 @@ ParseResult parsesym(char *cursor) {
 }
 
 int numval(char c) {
-    return c - 30;
+    return c - 48;
 }
 
 ParseResult parsenum(char *cursor) {
@@ -160,7 +160,7 @@ ParseResult parsenum(char *cursor) {
 }
 
 // TODO: test this! forgot to TDD in my excitement
-ParseResult parselist(char *cursor) {
+ParseResult parselist(char *buf) {
     Value value = make_cons_cell(nil());
     Cons *list = value.data.list;
     ParseResult result; 
@@ -186,9 +186,11 @@ ParseResult parselist(char *cursor) {
     }
     result = (ParseResult) { cursor, value, None };
     return result;
-/* error_handler:
+/* 
+    error_handler:
     printf("There was a syntax error in your code.");
-    return (ParseResult) { NULL, nil(), MalformedSymbol }; */
+    return (ParseResult) { NULL, nil(), MalformedSymbol }; 
+*/
 }
 
 // printList and printValue are mutually recursive; if I switch to using
@@ -214,8 +216,6 @@ void printValue(Value v) {
 void printList(Value l) {
     while(l.tag != Nil) {
         printValue(head(l));
-        // TODO: this is horrible, switch from null punning to something more
-        // reasonable
         l = tail(l);
     }
     printf("\n");
