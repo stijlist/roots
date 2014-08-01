@@ -140,7 +140,7 @@ ParseResult parsesym(char *cursor) {
     ParseResult result;
     char *symbuf = malloc(MAX_SYMBOL_SIZE * sizeof(char));
     int i;
-    for (i = 0; *cursor != ' '; cursor++, i++) 
+    for (i = 0; is_alpha(*cursor); cursor++, i++) 
         symbuf[i] = *cursor;
     result = (ParseResult) { cursor, symbol(symbuf) };
     return result;
@@ -209,11 +209,13 @@ void printValue(Value v) {
 }
 
 void printList(Value l) {
+    // printf("(");
     while(l.tag != Nil) {
         printValue(head(l));
         l = tail(l);
     }
     printf("\n");
+    // printf(")");
 }
 
 // example program: 
@@ -253,5 +255,11 @@ int main() {
     printf("Testing the parse function with (1 2 3) \n");
     ParseResult result = parse("(1 2 3)");
     printValue(result.value);
+    ParseResult result2 = parse("(21 22 23)");
+    printValue(result2.value);
+    ParseResult result3 = parse("(bert eric max)");
+    printValue(result3.value);
+    ParseResult result4 = parse("(eric (is number one) 1)");
+    printValue(result4.value);
     return 0;
 }
