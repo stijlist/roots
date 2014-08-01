@@ -122,16 +122,18 @@ bool is_num(char c) {
     return (c >= 48 && c <= 57);
 }
 
+/*
 enum ParseError {
     None,
     UnbalancedList,
     MalformedSymbol,
 };
+*/
 
 typedef struct _parseresult {
     char *newcursor;
     Value value;
-    enum ParseError error;
+    /* enum ParseError error; */
 } ParseResult;
 
 ParseResult parsesym(char *cursor) {
@@ -140,10 +142,14 @@ ParseResult parsesym(char *cursor) {
     int i;
     for (i = 0; *cursor != ' '; cursor++, i++) 
         symbuf[i] = *cursor;
-    while (*cursor == ' ') 
-        cursor++;
-    result = (ParseResult) { cursor, symbol(symbuf), None };
+    result = (ParseResult) { cursor, symbol(symbuf) };
     return result;
+}
+
+char* next_value_at(char *cursor) {
+    while (*cursor == ' ' || *cursor == '\t') 
+        cursor++;
+    return cursor;
 }
 
 int numval(char c) {
@@ -151,46 +157,35 @@ int numval(char c) {
 }
 
 ParseResult parsenum(char *cursor) {
-    ParseResult result;
     int acc = 0;
     for (; is_num(*cursor); cursor++) 
         acc = acc * 10 + numval(*cursor);
-    result = (ParseResult) { cursor, number(acc), None };
-    return result;
+    return (ParseResult) { cursor, number(acc) };
 }
 
-// TODO: test this! forgot to TDD in my excitement
-ParseResult parselist(char *buf) {
-    Value value = make_cons_cell(nil());
-    Cons *list = value.data.list;
-    ParseResult result; 
-    /* consume the initial paren given to parselist, recursively advance 
-     * through tokens */
-    char *cursor = buf;
-    // should this be a for loop? I'm incrementing cursor each round anyway
-    while (!is_close_paren(*cursor)) {
-        cursor++;
-        if (is_open_paren(*cursor)) {
-            result = parselist(cursor); 
-            cursor = result.newcursor;
-            list->head = result.value;
-        } else if (is_alpha(*cursor)) {
-            result = parsesym(cursor);
-            cursor = result.newcursor;
-            list->head = result.value;
-        } else if (is_num(*cursor)) {
-            result = parsenum(cursor);
-            cursor = result.newcursor;
-            list->head = result.value;
-        }
+ParseResult parse(char *cursor) {
+    ParseResult result, remaining;
+    cursor = next_value_at(cursor);
+    if (is_open_paren(*cursor)) {
+        result = parse(++cursor);
+        remaining = parse(result.newcursor);
+        return (ParseResult) { remaining.newcursor, cons(result.value, remaining.value) };
+    } else if (is_alpha(*cursor)) {
+        result = parsesym(cursor);
+        remaining = parse(result.newcursor);
+        return (ParseResult) { remaining.newcursor, cons(result.value, remaining.value) };
+    } else if (is_num(*cursor)) {
+        result = parsenum(cursor);
+        remaining = parse(next_value_at(result.newcursor));
+        return (ParseResult) { remaining.newcursor, cons(result.value, remaining.value) };
+    } else if (is_close_paren(*cursor)) {
+        return (ParseResult) { ++cursor, nil() };
+    } else if (*cursor == 0) {
+        return (ParseResult) { cursor, nil() };
+    } else {
+        printf("Problem reading buffer at:\n %s\n", cursor);
+        return (ParseResult) { cursor, nil() };
     }
-    result = (ParseResult) { cursor, value, None };
-    return result;
-/* 
-    error_handler:
-    printf("There was a syntax error in your code.");
-    return (ParseResult) { NULL, nil(), MalformedSymbol }; 
-*/
 }
 
 // printList and printValue are mutually recursive; if I switch to using
@@ -256,7 +251,7 @@ int main() {
     printf("\n");
 
     printf("Testing the parse function with (1 2 3) \n");
-    ParseResult result1 = parselist("(1 2 3)");
-    printValue(result1.value);
+    ParseResult result = parse("(1 2 3)");
+    printValue(result.value);
     return 0;
 }
