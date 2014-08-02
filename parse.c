@@ -194,10 +194,10 @@ void printList(Value l);
 void printValue(Value v) {
     switch (v.tag) {
         case Number:
-            printf("%d ", v.data.number);
+            printf("%d", v.data.number);
             break;
         case Symbol:
-            printf("%s ", v.data.symbol);
+            printf("%s", v.data.symbol);
             break;
         case ConsCell:
             printList(v);
@@ -209,13 +209,14 @@ void printValue(Value v) {
 }
 
 void printList(Value l) {
-    // printf("(");
+    printf("(");
     while(l.tag != Nil) {
         printValue(head(l));
         l = tail(l);
+        // TODO: condense conditional
+        if (l.tag != Nil) printf(" ");
     }
-    printf("\n");
-    // printf(")");
+    printf(")");
 }
 
 // example program: 
@@ -223,8 +224,6 @@ void printList(Value l) {
 // example program: 
 // (define main (lambda (x y) (+ x y)))
 int main() {
-    // reader: split on () and whitespace to tokenize
-    // generate a data structure in memory to represent the AST
     // how does evaluation work? a pointer to environment and a 
     // pointer to function. call the function with that environment
     // and then return.
@@ -236,7 +235,7 @@ int main() {
     
     printf("Testing the print function: ");
     Value newHead = cons(number(1), l);
-    printList(newHead);
+    printValue(newHead);
     printf("Testing the nth function:\n");
     Value first = nth(0, newHead);
     printf("The first element from the head of the linked list is ");
@@ -255,11 +254,14 @@ int main() {
     printf("Testing the parse function with (1 2 3) \n");
     ParseResult result = parse("(1 2 3)");
     printValue(result.value);
-    ParseResult result2 = parse("(21 22 23)");
-    printValue(result2.value);
-    ParseResult result3 = parse("(bert eric max)");
-    printValue(result3.value);
-    ParseResult result4 = parse("(eric (is number one) 1)");
-    printValue(result4.value);
+//    printf("\n");
+//    ParseResult result2 = parse("(21 22 23)");
+//    printValue(result2.value);
+//    printf("\n");
+//    ParseResult result3 = parse("(bert eric max)");
+//    printValue(result3.value);
+//    printf("\n");
+//    ParseResult result4 = parse("(eric (is number one) 1)");
+//    printValue(result4.value);
     return 0;
 }
