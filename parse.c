@@ -12,6 +12,7 @@ typedef enum {
     Symbol,
     ConsCell,
     Nil,
+    Truth
 } TypeTag;
 typedef struct _value Value;
 typedef struct _cons Cons;
@@ -30,6 +31,8 @@ struct _cons {
     Value head;
     Value tail;
 };
+
+bool is_empty(Value v);
 
 Value symbol(char *buf) {
     return (Value) { (Data) buf, Symbol };
@@ -82,7 +85,34 @@ Value tail(Value v) {
     return nil();
 }
 
-/* TODO: consider whether a pointer return type is correct here */
+bool is_empty(Value v) {
+    return v.tag == ConsCell && head(v).tag == Nil && tail(v).tag == Nil;
+}
+
+Value quote(Value arg) {
+    return arg;
+}
+
+Value atom(Value arg) {
+    if (is_empty(arg) || arg.tag == Nil || arg.tag == Symbol)
+        return truth();
+    else
+        return nil();
+}
+
+Value eq(Value arg1, Value arg2) {
+    if (arg1.tag == arg2.tag) {
+        if (arg1.tag == Symbol && 
+            arg1.data.symbol == arg2.data.symbol) {
+            return truth();
+        } else if (arg1.tag == ConsCell && is_empty(arg1) && is_empty(arg2)) {
+            return truth();
+        }
+    }
+
+    return nil();
+}
+
 Value nth(int n, Value current) {
     if (current.tag != ConsCell) 
         printf("Error, calling nth on a non-list value.");
@@ -165,7 +195,7 @@ ParseResult parse(char *cursor) {
         return (ParseResult) { cursor, nil() };
     }
 }
-
+//
 // printList and printValue are mutually recursive; if I switch to using
 // header files, I can remove this forward declaration
 void printList(Value l); 
@@ -181,8 +211,10 @@ void printValue(Value v) {
             printList(v);
             break;
         case Nil:
-            printf("nil ");
+            printf("()");
             break;
+        case Truth:
+            printf("t");
     }
 }
 
