@@ -1,9 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #define MAX_SYMBOL_SIZE 32
-/* Conventions: functions prefixed with "make" are allowed to malloc
- *              functions prefixed with "clean" are allowed to free
- */
+
 typedef enum {
     false,
     true,
@@ -45,34 +43,23 @@ Value nil() {
     return (Value) { (Data) 0, Nil };
 }
 
-Value make_cons_cell(Value value) {
-    // malloc a linked list, return the pointer
-    Cons *cons_cell = malloc(sizeof(Cons));
-    Value retval;
-    cons_cell->head = value;
-    cons_cell->tail = nil();
-    
-    retval.tag = ConsCell;
-    retval.data.list = cons_cell;
-    return retval;
+Value truth() {
+    return (Value) { (Data) 1, Truth };
 }
 
-/* the cons function adds a new value to the head of a linked list 
- * and returns a pointer to the new head of the list without 
- * mutating or invalidating your old pointer to the head of the list
- * Is this a good idea? I'm not sure. Maybe we want our pointers to
- * the old head of the list to be updated?
- * Maybe this should actually take two Values and return a Value 
- * that represents the cons of the two.
- * 
- * Okay, take two: cons 
- */
+Cons* make_cons_cell() {
+    Cons *cons_cell = malloc(sizeof(Cons));
+    cons_cell->head = nil();
+    cons_cell->tail = nil();
+    
+    return cons_cell;
+}
+
 Value cons(Value head, Value tail) {
-    Value cons = make_cons_cell(head);
-    Cons *list = cons.data.list;
-    list->head = head;
-    list->tail = tail;
-    return cons;
+    Cons *cons = make_cons_cell();
+    cons->head = head;
+    cons->tail = tail;
+    return (Value) { (Data) cons, ConsCell };
 }
 
 // returns a value pointer, mutable
@@ -122,18 +109,9 @@ bool is_num(char c) {
     return (c >= 48 && c <= 57);
 }
 
-/*
-enum ParseError {
-    None,
-    UnbalancedList,
-    MalformedSymbol,
-};
-*/
-
 typedef struct _parseresult {
     char *newcursor;
     Value value;
-    /* enum ParseError error; */
 } ParseResult;
 
 ParseResult parsesym(char *cursor) {
@@ -236,6 +214,7 @@ int main() {
     printf("Testing the print function: ");
     Value newHead = cons(number(1), l);
     printValue(newHead);
+    printf("\n");
     printf("Testing the nth function:\n");
     Value first = nth(0, newHead);
     printf("The first element from the head of the linked list is ");
@@ -254,14 +233,5 @@ int main() {
     printf("Testing the parse function with (1 2 3) \n");
     ParseResult result = parse("(1 2 3)");
     printValue(result.value);
-//    printf("\n");
-//    ParseResult result2 = parse("(21 22 23)");
-//    printValue(result2.value);
-//    printf("\n");
-//    ParseResult result3 = parse("(bert eric max)");
-//    printValue(result3.value);
-//    printf("\n");
-//    ParseResult result4 = parse("(eric (is number one) 1)");
-//    printValue(result4.value);
     return 0;
 }
