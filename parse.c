@@ -65,20 +65,18 @@ Value cons(Value head, Value tail) {
     return (Value) { (Data) cons, ConsCell };
 }
 
-// returns a value pointer, mutable
 Value head(Value v) {
     if (v.tag != ConsCell) {
-        printf("Error, calling head on a non-list value.");
+        printf("Error, calling head on a non-list value.\n");
         return nil();
     } else {
         return v.data.list->head;
     }
 }
     
-// return a value pointer, mutable
 Value tail(Value v) {
     if (v.tag != ConsCell)
-        printf("Error, calling head on a non-list value.");
+        printf("Error, calling tail on a non-list value.\n");
     else
         return v.data.list->tail;
 
@@ -112,6 +110,23 @@ Value eq(Value arg1, Value arg2) {
 
     return nil();
 }
+
+// Value eval(Value arg) {
+//     switch (arg.tag) {
+//         case Symbol:
+//             return eval(lookup(arg.data.symbol));
+//         case Number:
+//             return arg;
+//         case Nil:
+//             return arg;
+//         case ConsCell:
+//             return cons(eval(head(arg)), eval(tail(arg)));
+//         case Truth:
+//             return arg;
+//     }
+//     printf("Error evaluating argument. \n");
+//     return nil();
+// }
 
 Value nth(int n, Value current) {
     if (current.tag != ConsCell) 
@@ -171,23 +186,26 @@ ParseResult parsenum(char *cursor) {
     return (ParseResult) { cursor, number(acc) };
 }
 
+ParseResult parse(char *cursor);
+ParseResult parselist(char *cursor) {
+    if (is_close_paren(*cursor)) {
+        return (ParseResult) { ++cursor, nil() };
+    } else { 
+        ParseResult result = parse(cursor);
+        ParseResult remaining = parselist(result.newcursor);
+        Value rest = cons(result.value, remaining.value);
+        return (ParseResult) { remaining.newcursor, rest };
+    }
+}
+
 ParseResult parse(char *cursor) {
-    ParseResult result, remaining;
     cursor = next_value_at(cursor);
     if (is_open_paren(*cursor)) {
-        result = parse(++cursor);
-        remaining = parse(result.newcursor);
-        return (ParseResult) { remaining.newcursor, cons(result.value, remaining.value) };
+        return parselist(++cursor); // consume a paren
     } else if (is_alpha(*cursor)) {
-        result = parsesym(cursor);
-        remaining = parse(result.newcursor);
-        return (ParseResult) { remaining.newcursor, cons(result.value, remaining.value) };
+        return parsesym(cursor);
     } else if (is_num(*cursor)) {
-        result = parsenum(cursor);
-        remaining = parse(next_value_at(result.newcursor));
-        return (ParseResult) { remaining.newcursor, cons(result.value, remaining.value) };
-    } else if (is_close_paren(*cursor)) {
-        return (ParseResult) { ++cursor, nil() };
+        return parsenum(cursor);
     } else if (*cursor == 0) {
         return (ParseResult) { cursor, nil() };
     } else {
@@ -241,29 +259,30 @@ int main() {
     // AST structure: environment is a pointer to a hash table
     // 
     printf("Hello world\n");
-    Value l = cons(number(2), nil());
-    
-    printf("Testing the print function: ");
-    Value newHead = cons(number(1), l);
-    printValue(newHead);
-    printf("\n");
-    printf("Testing the nth function:\n");
-    Value first = nth(0, newHead);
-    printf("The first element from the head of the linked list is ");
-    printValue(first);
-    printf("\n");
-    Value second = nth(1, newHead);
-    printf("The second element from the head of the linked list is ");
-    printValue(second);
-
-    printf("\n");
-    
-    printf("Testing the updated printValue function:\n");
-    printValue(newHead);
-    printf("\n");
-
-    printf("Testing the parse function with (1 2 3) \n");
-    ParseResult result = parse("(1 2 3)");
+//    Value l = cons(number(2), nil());
+//    
+//    printf("Testing the print function: ");
+//    Value newHead = cons(number(1), l);
+//    printValue(newHead);
+//    printf("\n");
+//    printf("Testing the nth function:\n");
+//    Value first = nth(0, newHead);
+//    printf("The first element from the head of the linked list is ");
+//    printValue(first);
+//    printf("\n");
+//    Value second = nth(1, newHead);
+//    printf("The second element from the head of the linked list is ");
+//    printValue(second);
+//
+//    printf("\n");
+//    
+//    printf("Testing the updated printValue function:\n");
+//    printValue(newHead);
+//    printf("\n");
+//
+    printf("Testing the parse function with (1 2 (4 5))\n");
+    // ParseResult result = parse("(1 2 3)");
+    ParseResult result = parse("(1 (2) (4 5) (6 7))");
     printValue(result.value);
     return 0;
 }
