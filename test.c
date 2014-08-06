@@ -24,6 +24,7 @@ int main() {
     eval_and_print("(eq foo foo)");
     eval_and_print("(atom foo)");
     eval_and_print("(atom (1 2))");
+    eval_and_print("(if t 1 0)");
 
     return 0;
 }

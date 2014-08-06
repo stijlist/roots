@@ -61,7 +61,7 @@ bool is_empty(Value v) {
 
 // potential optimization: store symbols in a symbol table
 bool streq(char *str1, char *str2) {
-    for (int i=0; (str1[i] != 0 && str2[i] != 0); i++)
+    for (int i=0; (str1[i] != '\0' && str2[i] != '\0'); i++)
         if (str1[i] != str2[i]) return false;
 
     return true;
@@ -103,7 +103,7 @@ Value cdr(Value arg) {
 }
 
 Value cond(Value condition, Value consequent, Value alternate) {
-    return eval(condition).tag == Truth ? eval(consequent) : eval(alternate);
+    return condition.tag == Truth ? consequent : alternate;
 }
 
 Value eval(Value arg) {
@@ -142,8 +142,9 @@ Value eval(Value arg) {
             // mccarthy's original lisp implemented cond (arbitrary # arguments)
             // (if t 1 0) => 1
             Value test = car(operands);
-            Value options = cdr(operands);
-            return cond(test, car(options), cdr(options));
+            Value consequent = car(cdr(operands));
+            Value alternate = car(cdr(cdr(operands)));
+            return cond(test, consequent, alternate);
         } else if (symeq(operator, "lambda")) {
             // ???
             printf("Lambda not implemented. \n");
@@ -183,13 +184,12 @@ bool is_num(char c) {
 }
 
 ParseResult parsesym(char *cursor) {
-    ParseResult result;
     char *symbuf = malloc(MAX_SYMBOL_SIZE * sizeof(char));
-    int i;
-    for (i = 0; is_alpha(*cursor); cursor++, i++) 
+    for (int i = 0; is_alpha(*cursor); cursor++, i++) 
         symbuf[i] = *cursor;
-    result = (ParseResult) { cursor, symbol(symbuf) };
-    return result;
+
+    Value value = streq(symbuf, "t") ? truth() : symbol(symbuf);
+    return (ParseResult) { cursor, value };
 }
 
 char* next_value_at(char *cursor) {
