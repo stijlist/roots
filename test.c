@@ -1,5 +1,13 @@
 #include "roots.c"
 
+void eval_and_print(char *list) {
+    printf("eval %s\n", list); 
+    printf("Output: \n");
+    printValue(eval(parse(list).value));
+    printf("\n");
+    printf("\n");
+}
+
 int main() {
     // how does evaluation work? a pointer to environment and a 
     // pointer to function. call the function with that environment
@@ -7,57 +15,14 @@ int main() {
     // look for "main" in the environment and execute that first
     // AST structure: environment is a pointer to a hash table
     // 
-    printf("Hello world\n");
+    printf("Hello world.\n\n");
 
-    ParseResult result;
-    printf("Testing the parse function with (1 (2) ((3 4) 5))\n");
-    result = parse("(1 (2) ((3 4) 5))");
-    printValue(result.value);
-    printf("\n");
-
-    printf("Testing the parse function with (symbol 1 (2) ((3 4) 5)) \n");
-    result = parse("(symbol 1 (2) ((3 4) 5))");
-    printValue(result.value);
-    printf("\n");
-
-//    printf("Testing the streq function with 'hello' and 'hello'.\n");
-//    if (streq("hello", "hello"))
-//        printf("True\n");
-//    else
-//        printf("False\n");
-
-    result = parse("(quote (1 2 3))");
-    printf("Testing eval function with (quote (1 2 3))\n");
-    printf("Input: \n");
-    printValue(result.value);
-    printf("\nOutput: \n");
-    printValue(eval(result.value));
-    printf("\n");
-
-    result = parse("(car (1 2 3))");
-    printf("Testing eval function with (car (1 2 3))\n");
-    printf("Input: \n");
-    printValue(result.value);
-    printf("\nOutput: \n");
-    printValue(eval(result.value));
-    printf("\n");
-
-    result = parse("(1 2 3)");
-    printf("Testing car function with (1 2 3)\n");
-    printf("Input: \n");
-    printValue(result.value);
-    printf("\n");
-    printf("Output: \n");
-    printValue(car(result.value));
-    printf("\n");
-
-    result = parse("(1 2 3)");
-    printf("Testing quote function with (1 2 3)\n");
-    printf("Input: \n");
-    printValue(result.value);
-    printf("\nOutput: \n");
-    printValue(quote(result.value));
-    printf("\n");
+    eval_and_print("(cons 1 2)");
+    eval_and_print("(car (1 2))");
+    eval_and_print("(cdr (1 2))");
+    eval_and_print("(quote (1 2))");
+    eval_and_print("(cons (1) 2)");
+    eval_and_print("(quote (1) 2)");
 
     return 0;
 }
