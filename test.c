@@ -1,4 +1,4 @@
-#include "roots.c"
+#include "roots.h"
 
 void eval_and_print(char *list) {
     printf("eval %s\n", list); 

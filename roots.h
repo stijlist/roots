@@ -41,3 +41,4 @@ Value car(Value arg);
 Value eval(Value arg);
 ParseResult parse(char *cursor);
 void printList(Value l); 
+void printValue(Value v);

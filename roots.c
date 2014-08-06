@@ -1,3 +1,5 @@
+#ifndef ROOTS_H
+#define ROOTS_H
 #include "roots.h"
 #define MAX_SYMBOL_SIZE 32
 
@@ -259,3 +261,4 @@ void printList(Value l) {
     }
     printf(")");
 }
+#endif
