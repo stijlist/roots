@@ -25,6 +25,8 @@ int main() {
     eval_and_print("(atom foo)");
     eval_and_print("(atom (1 2))");
     eval_and_print("(if t 1 0)");
+    eval_and_print("(if (atom ()) (cons 1 2) 0)");
+    eval_and_print("(if (atom (1 2)) (cons 1 2) 0)");
 
     return 0;
 }
