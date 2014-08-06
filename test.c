@@ -23,6 +23,7 @@ int main() {
     eval_and_print("(quote (1 2))");
     eval_and_print("(cons (1) 2)");
     eval_and_print("(quote (1) 2)");
+    eval_and_print("(eq foo foo)");
 
     return 0;
 }

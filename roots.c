@@ -15,6 +15,8 @@ Value nil() {
     return (Value) { (Data) 0, Nil };
 }
 
+// design flaw? should I need to tag truthy values? 
+// TODO: reexamine this after you've implemented define
 Value truth() {
     return (Value) { (Data) 1, Truth };
 }
@@ -83,13 +85,12 @@ Value atom(Value arg) {
 Value eq(Value arg1, Value arg2) {
     if (arg1.tag == arg2.tag) {
         if (arg1.tag == Symbol && 
-            arg1.data.symbol == arg2.data.symbol) {
+            streq(arg1.data.symbol, arg2.data.symbol)) {
             return truth();
         } else if (arg1.tag == ConsCell && is_empty(arg1) && is_empty(arg2)) {
             return truth();
         }
     }
-
     return nil();
 }
 
