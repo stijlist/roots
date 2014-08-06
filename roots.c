@@ -103,7 +103,7 @@ Value cdr(Value arg) {
 }
 
 Value cond(Value condition, Value consequent, Value alternate) {
-    return condition.tag == Truth ? consequent : alternate;
+    return eval(condition).tag == Truth ? eval(consequent) : eval(alternate);
 }
 
 Value eval(Value arg) {
