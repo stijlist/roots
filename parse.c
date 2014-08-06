@@ -1,38 +1,5 @@
-#include <stdlib.h>
-#include <stdio.h>
+#include "roots.h"
 #define MAX_SYMBOL_SIZE 32
-
-typedef enum {
-    false,
-    true,
-} bool;
-
-typedef enum {
-    Number,
-    Symbol,
-    ConsCell,
-    Nil,
-    Truth
-} TypeTag;
-typedef struct _value Value;
-typedef struct _cons Cons;
-typedef union _data Data;
-
-struct _value {
-    union _data {
-        int number;
-        Cons *list;
-        char *symbol;
-    } data;
-    TypeTag tag;
-};
-
-struct _cons {
-    Value head;
-    Value tail;
-};
-
-bool is_empty(Value v);
 
 Value symbol(char *buf) {
     return (Value) { (Data) buf, Symbol };
@@ -83,8 +50,21 @@ Value tail(Value v) {
     return nil();
 }
 
+// not certain of the correctness of this function
 bool is_empty(Value v) {
     return v.tag == ConsCell && head(v).tag == Nil && tail(v).tag == Nil;
+}
+
+// potential optimization: store symbols in a symbol table
+bool streq(char *str1, char *str2) {
+    for (int i=0; (str1[i] != 0 && str2[i] != 0); i++)
+        if (str1[i] != str2[i]) return false;
+
+    return true;
+}
+
+bool symeq(Value sym, char *str) {
+    return streq(sym.data.symbol, str);
 }
 
 Value quote(Value arg) {
@@ -111,22 +91,64 @@ Value eq(Value arg1, Value arg2) {
     return nil();
 }
 
-// Value eval(Value arg) {
-//     switch (arg.tag) {
-//         case Symbol:
-//             return eval(lookup(arg.data.symbol));
-//         case Number:
-//             return arg;
-//         case Nil:
-//             return arg;
-//         case ConsCell:
-//             return cons(eval(head(arg)), eval(tail(arg)));
-//         case Truth:
-//             return arg;
-//     }
-//     printf("Error evaluating argument. \n");
-//     return nil();
-// }
+Value car(Value arg) {
+    return head(arg);
+}
+
+Value cdr(Value arg) {
+    return tail(arg);
+}
+
+Value cond(Value condition, Value consequent, Value alternate) {
+    return eval(condition).tag == Truth ? eval(consequent) : eval(alternate);
+}
+
+Value eval(Value arg) {
+    if (arg.tag == ConsCell) {
+        Value operator = car(arg);
+        Value operands = cdr(arg);
+
+        if (symeq(operator, "quote")) {
+            // only takes one argument; ignores the rest
+            // (quote (1 2 3)) => (1 2 3)
+            // (quote (1 2 3) 4) => (1 2 3)
+            return quote(car(operands));
+        } else if (symeq(operator, "eq")) {
+            // only takes two arguments. should I make this variadic?
+            // (eq 1 1) => t
+            return eq(car(operands), car(cdr(operands)));
+        } else if (symeq(operator, "car")) {
+            // only takes one argument, a list
+            // (car (1 2 3)) => 1
+            Value list = car(operands);
+            return car(list);
+        } else if (symeq(operator, "cdr")) {
+            // only takes one argument
+            // (cdr (1 2 3)) => (2 3)
+            Value list = car(operands);
+            return cdr(list);
+        } else if (symeq(operator, "cons")) {
+            // only takes two arguments
+            // (cons 1 (2 3)) => (1 2 3)
+            return cons(car(operands), cdr(operands));
+        } else if (symeq(operator, "if")) {
+            // only takes three arguments
+            // mccarthy's original lisp implemented cond (arbitrary # arguments)
+            // (if t 1 0) => 1
+            Value test = car(operands);
+            Value options = cdr(operands);
+            return cond(test, car(options), cdr(options));
+        } else if (symeq(operator, "lambda")) {
+            // ???
+            printf("Lambda not implemented. \n");
+        }
+    } else {
+        // numbers and nils evaluate to themselves
+        return arg;
+    }
+    // returning nil in failure cases until I figure out exception handling
+    return nil();
+}
 
 Value nth(int n, Value current) {
     if (current.tag != ConsCell) 
@@ -153,11 +175,6 @@ bool is_alpha(char c) {
 bool is_num(char c) {
     return (c >= 48 && c <= 57);
 }
-
-typedef struct _parseresult {
-    char *newcursor;
-    Value value;
-} ParseResult;
 
 ParseResult parsesym(char *cursor) {
     ParseResult result;
@@ -186,7 +203,6 @@ ParseResult parsenum(char *cursor) {
     return (ParseResult) { cursor, number(acc) };
 }
 
-ParseResult parse(char *cursor);
 ParseResult parselist(char *cursor) {
     if (is_close_paren(*cursor)) {
         return (ParseResult) { ++cursor, nil() };
@@ -213,10 +229,7 @@ ParseResult parse(char *cursor) {
         return (ParseResult) { cursor, nil() };
     }
 }
-//
-// printList and printValue are mutually recursive; if I switch to using
-// header files, I can remove this forward declaration
-void printList(Value l); 
+
 void printValue(Value v) {
     switch (v.tag) {
         case Number:
@@ -259,30 +272,56 @@ int main() {
     // AST structure: environment is a pointer to a hash table
     // 
     printf("Hello world\n");
-//    Value l = cons(number(2), nil());
-//    
-//    printf("Testing the print function: ");
-//    Value newHead = cons(number(1), l);
-//    printValue(newHead);
-//    printf("\n");
-//    printf("Testing the nth function:\n");
-//    Value first = nth(0, newHead);
-//    printf("The first element from the head of the linked list is ");
-//    printValue(first);
-//    printf("\n");
-//    Value second = nth(1, newHead);
-//    printf("The second element from the head of the linked list is ");
-//    printValue(second);
-//
-//    printf("\n");
-//    
-//    printf("Testing the updated printValue function:\n");
-//    printValue(newHead);
-//    printf("\n");
-//
-    printf("Testing the parse function with (1 2 (4 5))\n");
-    // ParseResult result = parse("(1 2 3)");
-    ParseResult result = parse("(1 (2) (4 5) (6 7))");
+
+    ParseResult result;
+    printf("Testing the parse function with (1 (2) ((3 4) 5))\n");
+    result = parse("(1 (2) ((3 4) 5))");
     printValue(result.value);
+    printf("\n");
+
+    printf("Testing the parse function with (symbol 1 (2) ((3 4) 5)) \n");
+    result = parse("(symbol 1 (2) ((3 4) 5))");
+    printValue(result.value);
+    printf("\n");
+
+//    printf("Testing the streq function with 'hello' and 'hello'.\n");
+//    if (streq("hello", "hello"))
+//        printf("True\n");
+//    else
+//        printf("False\n");
+
+    result = parse("(quote (1 2 3))");
+    printf("Testing eval function with (quote (1 2 3))\n");
+    printf("Input: \n");
+    printValue(result.value);
+    printf("\nOutput: \n");
+    printValue(eval(result.value));
+    printf("\n");
+
+    result = parse("(car (1 2 3))");
+    printf("Testing eval function with (car (1 2 3))\n");
+    printf("Input: \n");
+    printValue(result.value);
+    printf("\nOutput: \n");
+    printValue(eval(result.value));
+    printf("\n");
+
+    result = parse("(1 2 3)");
+    printf("Testing car function with (1 2 3)\n");
+    printf("Input: \n");
+    printValue(result.value);
+    printf("\n");
+    printf("Output: \n");
+    printValue(car(result.value));
+    printf("\n");
+
+    result = parse("(1 2 3)");
+    printf("Testing quote function with (1 2 3)\n");
+    printf("Input: \n");
+    printValue(result.value);
+    printf("\nOutput: \n");
+    printValue(quote(result.value));
+    printf("\n");
+
     return 0;
 }
