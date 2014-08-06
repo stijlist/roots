@@ -21,9 +21,9 @@ int main() {
     eval_and_print("(car (1 2))");
     eval_and_print("(cdr (1 2))");
     eval_and_print("(quote (1 2))");
-    eval_and_print("(cons (1) 2)");
-    eval_and_print("(quote (1) 2)");
     eval_and_print("(eq foo foo)");
+    eval_and_print("(atom foo)");
+    eval_and_print("(atom (1 2))");
 
     return 0;
 }

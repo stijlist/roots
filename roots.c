@@ -116,6 +116,9 @@ Value eval(Value arg) {
             // (quote (1 2 3)) => (1 2 3)
             // (quote (1 2 3) 4) => (1 2 3)
             return quote(car(operands));
+        } else if (symeq(operator, "atom")) {
+            // only takes one argument
+            return atom(car(operands));
         } else if (symeq(operator, "eq")) {
             // only takes two arguments. should I make this variadic?
             // (eq 1 1) => t
