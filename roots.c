@@ -16,7 +16,7 @@ Value nil() {
 }
 
 // design flaw? should I need to tag truthy values? 
-// TODO: reexamine this after you've implemented define
+// NOTE: reexamine this after you've implemented define
 Value truth() {
     return (Value) { (Data) 1, Truth };
 }
@@ -53,6 +53,16 @@ Value tail(Value v) {
 
     return nil();
 }
+
+Table make_env() {
+    Table env;
+    for (int i=0; i < 256; i++) {
+        env.key[i].head = nil();
+        env.key[i].tail = nil();
+    }
+    return env;
+}
+
 
 // not certain of the correctness of this function
 bool is_empty(Value v) {
@@ -102,11 +112,33 @@ Value cdr(Value arg) {
     return tail(arg);
 }
 
-Value cond(Value condition, Value consequent, Value alternate) {
-    return eval(condition).tag == Truth ? eval(consequent) : eval(alternate);
+Value cond(Value condition, Value consequent, Value alternate, Table env) {
+    return eval(condition, env).tag == Truth ? eval(consequent, env) : eval(alternate, env);
 }
 
-Value eval(Value arg) {
+Value lookup(Value symbol, Table *table) {
+    for(int i=0; i < 256; i++)
+        if (symeq(symbol, table->key[i].head.data.symbol)) // is it just me or is this gross
+            return table->key[i].tail;
+
+    return nil();
+}
+
+void define(Value symbol, Value binding, Table table) {
+    for(int i=0; i < 256; i++) {
+        Cons current_pair = table.key[i];
+        if (symeq(symbol, current_pair.head.data.symbol)) {
+            current_pair.tail = binding;
+        } else if (current_pair.head.tag == Nil) {
+            current_pair.head = symbol;
+            current_pair.tail = binding;
+        }
+    }
+    printf("Full symbol table!");
+}
+
+// i have a hunch that pass-by-value here simplifies the implementation of closures
+Value eval(Value arg, Table env) {
     if (arg.tag == ConsCell) {
         Value operator = car(arg);
         Value operands = cdr(arg);
@@ -144,10 +176,12 @@ Value eval(Value arg) {
             Value test = car(operands);
             Value consequent = car(cdr(operands));
             Value alternate = car(cdr(cdr(operands)));
-            return cond(test, consequent, alternate);
+            return cond(test, consequent, alternate, env);
         } else if (symeq(operator, "lambda")) {
             // ???
             printf("Lambda not implemented. \n");
+        } else if (symeq(operator, "define")) {
+            define(car(operands), car(cdr(operands)), env);
         }
     } else {
         // numbers and nils evaluate to themselves
