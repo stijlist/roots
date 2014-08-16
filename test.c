@@ -18,7 +18,7 @@ int main() {
     printf("Hello world.\n\n");
     Table env = make_env();
 
-    eval_and_print("(cons 1 2)", env);
+    eval_and_print("(cons 1 2)", env); // oops
     eval_and_print("(car (1 2))", env);
     eval_and_print("(cdr (1 2))", env);
     eval_and_print("(quote (1 2))", env);
@@ -29,5 +29,9 @@ int main() {
     eval_and_print("(if (atom ()) (cons 1 2) 0)", env);
     eval_and_print("(if (atom (1 2)) (cons 1 2) 0)", env);
 
+    eval_and_print("(let (n 1) n)", env);
+    eval_and_print("(let (n 1) (cons n n))", env);
+    // eval_and_print("(let (n 1) (cons n (2 3))", env); unbalanced parens
+    // segfault????
     return 0;
 }

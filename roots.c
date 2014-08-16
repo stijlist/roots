@@ -116,25 +116,32 @@ Value cond(Value condition, Value consequent, Value alternate, Table env) {
     return eval(condition, env).tag == Truth ? eval(consequent, env) : eval(alternate, env);
 }
 
-Value lookup(Value symbol, Table *table) {
-    for(int i=0; i < 256; i++)
-        if (symeq(symbol, table->key[i].head.data.symbol)) // is it just me or is this gross
-            return table->key[i].tail;
+Value lookup(Value symbol, Table table) {
+    for(int i=0; i < 256; i++) {
+        if (table.key[i].head.tag == Nil) {
+            break;
+        }
+        if (symeq(symbol, table.key[i].head.data.symbol)) { // is it just me or is this gross 
+            return table.key[i].tail;
+        }
+    }
 
     return nil();
 }
 
-void define(Value symbol, Value binding, Table table) {
+Table let(Value symbol, Value binding, Table table) {
+    Table new_env;
     for(int i=0; i < 256; i++) {
         Cons current_pair = table.key[i];
-        if (symeq(symbol, current_pair.head.data.symbol)) {
-            current_pair.tail = binding;
-        } else if (current_pair.head.tag == Nil) {
-            current_pair.head = symbol;
-            current_pair.tail = binding;
-        }
+        if (current_pair.head.tag == Nil) {
+            new_env.key[i].head = symbol;
+            new_env.key[i].tail = binding;
+        } else if (symeq(symbol, current_pair.head.data.symbol)) {
+            new_env.key[i].tail = binding;
+        } 
     }
-    printf("Full symbol table!");
+
+    return new_env;
 }
 
 // i have a hunch that pass-by-value here simplifies the implementation of closures
@@ -180,12 +187,20 @@ Value eval(Value arg, Table env) {
         } else if (symeq(operator, "lambda")) {
             // ???
             printf("Lambda not implemented. \n");
-        } else if (symeq(operator, "define")) {
-            define(car(operands), car(cdr(operands)), env);
+        } else if (symeq(operator, "let")) {
+            // eval x in the environment where x is bound to 1
+            // (let (x 1) x) => 1
+            Value binding = car(operands);
+            Value body = car(cdr(operands));
+            Table new_env = let(car(binding), car(cdr(binding)), env);
+            return eval(body, new_env);
         }
     } else {
-        // numbers and nils evaluate to themselves
-        return arg;
+        if (arg.tag == Symbol) {
+            return lookup(arg, env);
+        } else { // numbers and nils evaluate to themselves
+            return arg;
+        }
     }
     // returning nil in failure cases until I figure out exception handling
     return nil();
