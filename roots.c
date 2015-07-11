@@ -214,16 +214,6 @@ Value eval(Value arg, Table env) {
     return nil();
 }
 
-Value nth(int n, Value current) {
-    if (current.tag != ConsCell) 
-        printf("Error, calling nth on a non-list value.");
-    else if (n == 0)
-        return current;
-    else
-        return nth(n-1, tail(current));
-    return nil();
-}
-
 bool is_open_paren(char c) {
     return c == 40;
 }
