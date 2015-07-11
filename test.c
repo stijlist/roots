@@ -34,7 +34,9 @@ int main() {
     eval_and_print("(let (n 1) n)", env);
     eval_and_print("(let (n 1) (cons n 1))", env);
     eval_and_print("(let (n 1) (cons n n))", env);
-    // eval_and_print("(let (n 1 m 2) (cons n m))", env); // unbalanced parens
+    eval_and_print("(let (x (cons 1 2)) x)", env);
+    eval_and_print("(let (x (cons 1 2)) (cons x 3))", env);
+    // eval_and_print("(let (x 1) (let (y 2) (cons x y)))", env);
     // segfault????
     return 0;
 }
