@@ -167,7 +167,7 @@ Value eval(Value arg, Table env) {
             return atom(eval(car(operands), env));
         } else if (symeq(operator, "eq")) {
             // (eq 1 1) => t
-            return eq(car(operands), car(cdr(operands)));
+            return eq(eval(car(operands), env), eval(car(cdr(operands)), env));
         } else if (symeq(operator, "car")) {
             // (car (1 2 3)) => 1
             Value arg = car(operands);

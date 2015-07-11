@@ -17,11 +17,15 @@ int main() {
     eval_and_print("(car (quote (1 2)))", env);
     eval_and_print("(cdr (quote (1 2)))", env);
     eval_and_print("(quote (1 2))", env);
-    eval_and_print("(eq foo foo)", env);
+    eval_and_print("(eq (quote foo) (quote foo))", env);
+    eval_and_print("(eq (quote foo) (quote bar))", env);
     eval_and_print("(eq 1 1)", env);
+    eval_and_print("(eq (car (quote (1))) 1)", env);
 
-    // does `eq` ask the question "are these values equal" or "are these *forms* equal?"
-    // eval_and_print("(eq foo (car (quote foo bar)))", env);
+    eval_and_print("(car (quote (foo bar)))", env);
+
+    eval_and_print("(eq 1 (car (quote (1 2))))", env);
+    eval_and_print("(eq (quote foo) (car (cons (quote foo) (quote bar))))", env);
 
     eval_and_print("(atom foo)", env);
     eval_and_print("(atom (quote (1 2)))", env);
