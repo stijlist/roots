@@ -81,6 +81,25 @@ bool symeq(Value sym, char *str) {
     return streq(sym.data.symbol, str);
 }
 
+Value lambda(Value symbol, Value body) {
+    return cons(symbol, body); // representing lambdas as simply as possible
+}
+
+Value apply(Value lambda_pair, Value arg) {
+    // swap the arg into all occurrences of symbol in the lambda body
+    // representing lambdas as a simple (symbol, body) pair for now
+    Value symbol = head(lambda_pair);
+    Value body = tail(lambda_pair);
+    if (body.tag == ConsCell) {
+        return cons(apply(lambda(symbol, head(body)), arg),
+                    apply(lambda(symbol, tail(body)), arg));
+    } else if (body.tag == Symbol && symeq(body, symbol.data.symbol)) {
+        return arg;
+    } else {
+        return body;
+    }
+}
+
 Value quote(Value arg) {
     return arg;
 }
@@ -189,7 +208,10 @@ Value eval(Value arg, Table env) {
             Value alternate = car(cdr(cdr(operands)));
             return cond(test, consequent, alternate, env);
         } else if (symeq(operator, "lambda")) {
-            // ((lambda (x) (cons 1 x)) 2) => (1 2)
+            // ((lambda x (cons 1 x)) 2) => (1 2)
+            // (((lambda x (lambda y (cons x y))) 1) 2) => (1 2)
+            Value symbol = car(operands);
+            Value body = car(cdr(operands));
             printf("Lambda not implemented. \n");
         } else if (symeq(operator, "let")) {
             // (let (x 1) x) => 1
@@ -297,6 +319,11 @@ void printValue(Value v) {
         case Nil:
             printf("()");
             break;
+        case Lambda:
+            printf("(lambda ");
+            printValue(head(v));
+            printf(" ");
+            printValue(tail(v));
         case Truth:
             printf("t");
     }

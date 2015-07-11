@@ -10,6 +10,7 @@ typedef enum {
     Number,
     Symbol,
     ConsCell,
+    Lambda,
     Nil,
     Truth
 } TypeTag;
