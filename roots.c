@@ -195,9 +195,9 @@ Value eval(Value arg, Table env) {
             // (let (x 1) x) => 1
             Value bindings = car(operands);
             Value symbol = car(bindings);
-            Value binding = eval(car(cdr(bindings)), env);
+            Value value = eval(car(cdr(bindings)), env);
             Value body = car(cdr(operands));
-            Table new_env = let(symbol, binding, env);
+            Table new_env = let(symbol, value, env);
             return eval(body, new_env);
         } else {
           printValue(operator);
