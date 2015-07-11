@@ -18,15 +18,16 @@ int main() {
     printf("Hello world.\n\n");
     Table env = make_env();
 
-    eval_and_print("(cons 1 2)", env); // oops
-    eval_and_print("(cons 1 (2 3))", env); // oops
-    eval_and_print("(car (1 2))", env);
-    eval_and_print("(cdr (1 2))", env);
+    eval_and_print("(cons 1 2)", env);
+    eval_and_print("(cons 1 (quote (2 3)))", env);
+    eval_and_print("(cons (quote (1 2)) 3)", env);
+    eval_and_print("(car (quote (1 2)))", env);
+    eval_and_print("(cdr (quote (1 2)))", env);
     eval_and_print("(quote (1 2))", env);
-    eval_and_print("(eq foo foo)", env);
-    eval_and_print("(atom foo)", env);
-    eval_and_print("(atom (1 2))", env);
-    eval_and_print("(if t 1 0)", env);
+    // eval_and_print("(eq foo foo)", env);
+    // eval_and_print("(atom foo)", env);
+    // eval_and_print("(atom (1 2))", env);
+    // eval_and_print("(if t 1 0)", env);
     // eval_and_print("(if (atom ()) (cons 1 2) 0)", env);
     // eval_and_print("(if (atom (1 2)) (cons 1 2) 0)", env);
 // 

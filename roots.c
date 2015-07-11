@@ -179,7 +179,7 @@ Value eval(Value arg, Table env) {
         } else if (symeq(operator, "cons")) {
             // only takes two arguments
             // (cons 1 (2 3)) => (1 2 3)
-            return cons(eval(car(operands), env), car(cdr(operands)));
+            return cons(eval(car(operands), env), eval(car(cdr(operands)), env));
         } else if (symeq(operator, "if")) {
             // only takes three arguments
             // mccarthy's original lisp implemented cond (arbitrary # arguments)
