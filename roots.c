@@ -142,6 +142,9 @@ Table let(Value symbol, Value binding, Table table) {
         } else if (current_pair.head.tag == Symbol && symeq(symbol, current_pair.head.data.symbol)) {
             new_env.key[i].tail = binding;
             break;
+        } else { // copy over values that aren't changing
+            new_env.key[i].head = table.key[i].head;
+            new_env.key[i].tail = table.key[i].tail;
         }
     }
 
