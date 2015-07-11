@@ -99,6 +99,8 @@ Value eq(Value arg1, Value arg2) {
             return truth();
         } else if (arg1.tag == ConsCell && is_empty(arg1) && is_empty(arg2)) {
             return truth();
+        } else if (arg1.tag == Number) {
+            return (arg1.data.number == arg2.data.number) ? truth() : nil();
         }
     }
     return nil();
