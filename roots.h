@@ -49,3 +49,4 @@ Value eval(Value arg, Table env);
 ParseResult parse(char *cursor);
 void printList(Value l); 
 void printValue(Value v);
+void printEnv(Table t);

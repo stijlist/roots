@@ -136,11 +136,14 @@ Table let(Value symbol, Value binding, Table table) {
         if (current_pair.head.tag == Nil) {
             new_env.key[i].head = symbol;
             new_env.key[i].tail = binding;
-        } else if (symeq(symbol, current_pair.head.data.symbol)) {
+            break;
+        } else if (current_pair.head.tag == Symbol && symeq(symbol, current_pair.head.data.symbol)) {
             new_env.key[i].tail = binding;
-        } 
+            break;
+        }
     }
 
+    // printEnv(new_env);
     return new_env;
 }
 
@@ -152,6 +155,7 @@ Value eval(Value arg, Table env) {
 
         if (symeq(operator, "quote")) {
             // only takes one argument; ignores the rest
+            // doesn't evaluate its arguments
             // (quote (1 2 3)) => (1 2 3)
             // (quote (1 2 3) 4) => (1 2 3)
             return quote(car(operands));
@@ -175,7 +179,7 @@ Value eval(Value arg, Table env) {
         } else if (symeq(operator, "cons")) {
             // only takes two arguments
             // (cons 1 (2 3)) => (1 2 3)
-            return cons(car(operands), cdr(operands));
+            return cons(eval(car(operands), env), car(cdr(operands)));
         } else if (symeq(operator, "if")) {
             // only takes three arguments
             // mccarthy's original lisp implemented cond (arbitrary # arguments)
@@ -190,6 +194,7 @@ Value eval(Value arg, Table env) {
         } else if (symeq(operator, "let")) {
             // eval x in the environment where x is bound to 1
             // (let (x 1) x) => 1
+            // (let (x 1 y 2) (cons x y)) => (1 2)
             Value binding = car(operands);
             Value body = car(cdr(operands));
             Table new_env = let(car(binding), car(cdr(binding)), env);
@@ -307,12 +312,26 @@ void printValue(Value v) {
 // TODO: dotted pairs are screwed up. fix this. 
 void printList(Value l) {
     printf("(");
-    while(l.tag != Nil) {
-        printValue(head(l));
-        l = tail(l);
-        // TODO: condense conditional
-        if (l.tag != Nil) printf(" ");
+    while(l.tag == ConsCell) {
+      printValue(head(l));
+      printf(" . ");
+      l = tail(l);
     }
+    printValue(l);
     printf(")");
+}
+
+void printEnv(Table t) {
+    printf("Env: ");
+    for (int i=0; i < 256; i++) {
+      printf("\n");
+      printf("Symbol #%d: ", i);
+      printValue(t.key[i].head);
+      printf("\n");
+      printf("Binding: ");
+      printValue(t.key[i].tail);
+    }
+    printf("End env.");
+    printf("\n");
 }
 #endif
