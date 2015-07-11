@@ -148,6 +148,7 @@ Table let(Value symbol, Value binding, Table table) {
 }
 
 // i have a hunch that pass-by-value here simplifies the implementation of closures
+// all builtins are fixed-arity; we can implement variable arity as macros
 Value eval(Value arg, Table env) {
     if (arg.tag == ConsCell) {
         Value operator = car(arg);
@@ -163,26 +164,20 @@ Value eval(Value arg, Table env) {
             // only takes one argument
             return atom(eval(car(operands), env));
         } else if (symeq(operator, "eq")) {
-            // only takes two arguments. should I make this variadic?
             // (eq 1 1) => t
             return eq(car(operands), car(cdr(operands)));
         } else if (symeq(operator, "car")) {
-            // only takes one argument, a list
             // (car (1 2 3)) => 1
             Value arg = car(operands);
             return car(eval(arg, env));
         } else if (symeq(operator, "cdr")) {
-            // only takes one argument
             // (cdr (1 2 3)) => (2 3)
             Value arg = car(operands);
             return cdr(eval(arg, env));
         } else if (symeq(operator, "cons")) {
-            // only takes two arguments
             // (cons 1 (2 3)) => (1 2 3)
             return cons(eval(car(operands), env), eval(car(cdr(operands)), env));
         } else if (symeq(operator, "if")) {
-            // only takes three arguments
-            // mccarthy's original lisp implemented cond (arbitrary # arguments)
             // (if t 1 0) => 1
             Value test = car(operands);
             Value consequent = car(cdr(operands));
@@ -192,7 +187,6 @@ Value eval(Value arg, Table env) {
             // ???
             printf("Lambda not implemented. \n");
         } else if (symeq(operator, "let")) {
-            // eval x in the environment where x is bound to 1
             // (let (x 1) x) => 1
             Value bindings = car(operands);
             Value symbol = car(bindings);
@@ -202,7 +196,7 @@ Value eval(Value arg, Table env) {
             return eval(body, new_env);
         } else {
           printValue(operator);
-          printf(" is not a function.");
+          printf(" is not a function.\n");
         }
     } else {
         if (arg.tag == Symbol) {
