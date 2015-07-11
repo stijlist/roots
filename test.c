@@ -17,13 +17,18 @@ int main() {
     eval_and_print("(car (quote (1 2)))", env);
     eval_and_print("(cdr (quote (1 2)))", env);
     eval_and_print("(quote (1 2))", env);
-    // eval_and_print("(eq foo foo)", env);
-    // eval_and_print("(atom foo)", env);
-    // eval_and_print("(atom (1 2))", env);
-    // eval_and_print("(if t 1 0)", env);
-    // eval_and_print("(if (atom ()) (cons 1 2) 0)", env);
-    // eval_and_print("(if (atom (1 2)) (cons 1 2) 0)", env);
-// 
+    eval_and_print("(eq foo foo)", env);
+
+    // does `eq` ask the question "are these values equal" or "are these *forms* equal?"
+    // eval_and_print("(eq foo (car (quote foo bar)))", env);
+
+    eval_and_print("(atom foo)", env);
+    eval_and_print("(atom (quote (1 2)))", env);
+
+    eval_and_print("(if t 1 0)", env);
+    eval_and_print("(if (atom ()) (cons 1 2) 0)", env);
+    eval_and_print("(if (atom (quote (1 2))) (cons 1 2) 0)", env);
+
     eval_and_print("(let (n 1) n)", env);
     eval_and_print("(let (n 1) (cons n 1))", env);
     eval_and_print("(let (n 1) (cons n n))", env);

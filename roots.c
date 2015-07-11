@@ -200,6 +200,9 @@ Value eval(Value arg, Table env) {
             Value body = car(cdr(operands));
             Table new_env = let(symbol, binding, env);
             return eval(body, new_env);
+        } else {
+          printValue(operator);
+          printf(" is not a function.");
         }
     } else {
         if (arg.tag == Symbol) {
