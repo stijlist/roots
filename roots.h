@@ -13,6 +13,7 @@ typedef enum {
     Nil,
     Truth
 } TypeTag;
+
 typedef struct _value Value;
 typedef struct _cons Cons;
 typedef union _data Data;
