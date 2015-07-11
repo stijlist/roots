@@ -212,7 +212,9 @@ Value eval(Value arg, Table env) {
             // (((lambda x (lambda y (cons x y))) 1) 2) => (1 2)
             Value symbol = car(operands);
             Value body = car(cdr(operands));
-            printf("Lambda not implemented. \n");
+            return lambda(symbol, body);
+        } else if (operator.tag == Lambda) {
+            return eval(apply(operator, car(operands)), env);
         } else if (symeq(operator, "let")) {
             // (let (x 1) x) => 1
             Value bindings = car(operands);
