@@ -309,7 +309,6 @@ void printValue(Value v) {
     }
 }
 
-// TODO: dotted pairs are screwed up. fix this. 
 void printList(Value l) {
     printf("(");
     while(l.tag == ConsCell) {
