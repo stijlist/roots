@@ -314,10 +314,10 @@ void printList(Value l) {
     printf("(");
     while(l.tag == ConsCell) {
       printValue(head(l));
-      printf(" . ");
       l = tail(l);
+      if (l.tag != Nil) printf(" ");
     }
-    printValue(l);
+    if (l.tag != Nil) printValue(l);
     printf(")");
 }
 
