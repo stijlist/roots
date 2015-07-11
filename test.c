@@ -1,10 +1,9 @@
 #include "roots.h"
 
 void eval_and_print(char *list, Table initial_env) {
-    printf("eval %s\n", list); 
-    printf("Output: \n");
+    printf("%s\n", list); 
+    printf("=> ");
     printValue(eval(parse(list).value, initial_env));
-    printf("\n");
     printf("\n");
 }
 
