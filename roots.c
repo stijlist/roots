@@ -189,7 +189,7 @@ Value eval(Value arg, Table env) {
             Value alternate = car(cdr(cdr(operands)));
             return cond(test, consequent, alternate, env);
         } else if (symeq(operator, "lambda")) {
-            // ???
+            // ((lambda (x) (cons 1 x)) 2) => (1 2)
             printf("Lambda not implemented. \n");
         } else if (symeq(operator, "let")) {
             // (let (x 1) x) => 1
