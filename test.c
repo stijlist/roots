@@ -8,12 +8,6 @@ void eval_and_print(char *list, Table initial_env) {
 }
 
 int main() {
-    // how does evaluation work? a pointer to environment and a 
-    // pointer to function. call the function with that environment
-    // and then return.
-    // look for "main" in the environment and execute that first
-    // AST structure: environment is a pointer to a hash table
-    // 
     printf("Hello world.\n\n");
     Table env = make_env();
 
