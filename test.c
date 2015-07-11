@@ -31,9 +31,9 @@ int main() {
     // eval_and_print("(if (atom ()) (cons 1 2) 0)", env);
     // eval_and_print("(if (atom (1 2)) (cons 1 2) 0)", env);
 // 
-    // eval_and_print("(let (n 1) n)", env);
-    // eval_and_print("(let (n 1) (cons n 1))", env);
-    // eval_and_print("(let (n 1) (cons n n))", env);
+    eval_and_print("(let (n 1) n)", env);
+    eval_and_print("(let (n 1) (cons n 1))", env);
+    eval_and_print("(let (n 1) (cons n n))", env);
     // eval_and_print("(let (n 1 m 2) (cons n m))", env); // unbalanced parens
     // segfault????
     return 0;

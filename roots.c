@@ -161,7 +161,7 @@ Value eval(Value arg, Table env) {
             return quote(car(operands));
         } else if (symeq(operator, "atom")) {
             // only takes one argument
-            return atom(car(operands));
+            return atom(eval(car(operands), env));
         } else if (symeq(operator, "eq")) {
             // only takes two arguments. should I make this variadic?
             // (eq 1 1) => t
@@ -169,13 +169,13 @@ Value eval(Value arg, Table env) {
         } else if (symeq(operator, "car")) {
             // only takes one argument, a list
             // (car (1 2 3)) => 1
-            Value list = car(operands);
-            return car(list);
+            Value arg = car(operands);
+            return car(eval(arg, env));
         } else if (symeq(operator, "cdr")) {
             // only takes one argument
             // (cdr (1 2 3)) => (2 3)
-            Value list = car(operands);
-            return cdr(list);
+            Value arg = car(operands);
+            return cdr(eval(arg, env));
         } else if (symeq(operator, "cons")) {
             // only takes two arguments
             // (cons 1 (2 3)) => (1 2 3)
@@ -194,10 +194,11 @@ Value eval(Value arg, Table env) {
         } else if (symeq(operator, "let")) {
             // eval x in the environment where x is bound to 1
             // (let (x 1) x) => 1
-            // (let (x 1 y 2) (cons x y)) => (1 2)
-            Value binding = car(operands);
+            Value bindings = car(operands);
+            Value symbol = car(bindings);
+            Value binding = eval(car(cdr(bindings)), env);
             Value body = car(cdr(operands));
-            Table new_env = let(car(binding), car(cdr(binding)), env);
+            Table new_env = let(symbol, binding, env);
             return eval(body, new_env);
         }
     } else {
