@@ -38,16 +38,10 @@ typedef struct _parseresult {
     Value value;
 } ParseResult;
 
-typedef struct _table {
-    Cons key[256]; // 256 pairs in my symbol table
-} Table;
-
-Table make_env();
-
 bool is_empty(Value v);
 Value car(Value arg);
-Value eval(Value arg, Table env);
+Value eval_empty(Value arg);
+Value eval(Value arg, Value env);
 ParseResult parse(char *cursor);
 void printList(Value l); 
 void printValue(Value v);
-void printEnv(Table t);

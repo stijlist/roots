@@ -56,19 +56,21 @@ Value tail(Value v) {
     return nil();
 }
 
-Table make_env() {
-    Table env;
-    for (int i=0; i < 256; i++) {
-        env.key[i].head = nil();
-        env.key[i].tail = nil();
-    }
-    return env;
-}
-
-
 // not certain of the correctness of this function
 bool is_empty(Value v) {
     return v.tag == ConsCell && head(v).tag == Nil && tail(v).tag == Nil;
+}
+
+bool is_true(Value v) {
+    return v.tag == Truth;
+}
+
+Value car(Value arg) {
+    return head(arg);
+}
+
+Value cdr(Value arg) {
+    return tail(arg);
 }
 
 // potential optimization: store symbols in a symbol table
@@ -81,53 +83,6 @@ bool streq(char *str1, char *str2) {
 
 bool symeq(Value sym, char *str) {
     return sym.tag == Symbol && streq(sym.data.symbol, str);
-}
-
-Value lookup(Value symbol, Table table) {
-    for(int i=0; i < 256; i++) {
-        if (table.key[i].head.tag == Nil) {
-            break;
-        }
-        if (symeq(symbol, table.key[i].head.data.symbol)) { // is it just me or is this gross 
-            return table.key[i].tail;
-        }
-    }
-
-    return nil();
-}
-
-Table let(Value symbol, Value binding, Table table) {
-    Table new_env;
-    for(int i=0; i < 256; i++) {
-        Cons current_pair = table.key[i];
-        if (current_pair.head.tag == Nil) {
-            new_env.key[i].head = symbol;
-            new_env.key[i].tail = binding;
-            break;
-        } else if (current_pair.head.tag == Symbol && symeq(symbol, current_pair.head.data.symbol)) {
-            new_env.key[i].tail = binding;
-            break;
-        } else { // copy over values that aren't changing
-            new_env.key[i].head = table.key[i].head;
-            new_env.key[i].tail = table.key[i].tail;
-        }
-    }
-
-    // printEnv(new_env);
-    return new_env;
-}
-
-Value lambda(Value symbol, Value body) {
-    Value l = cons(symbol, body);
-    l.tag = Lambda;
-    return l;
-}
-
-Value apply(Value lambda_pair, Value arg, Table env) {
-    Value symbol = head(lambda_pair);
-    Value body = tail(lambda_pair);
-    Table new_env = let(symbol, arg, env);
-    return eval(body, new_env);
 }
 
 Value quote(Value arg) {
@@ -155,17 +110,47 @@ Value eq(Value arg1, Value arg2) {
     return nil();
 }
 
-Value car(Value arg) {
-    return head(arg);
+Value lookup(Value symbol, Value table) {
+    while (!is_empty(table))
+        if (is_true(eq(car(car(table)), symbol)))
+            return cdr(car(table));
+        else
+            return lookup(symbol, cdr(table));
+          
+    printf("Failed to find symbol ");
+    printValue(symbol);
+    printf("\n");
 }
 
-Value cdr(Value arg) {
-    return tail(arg);
+Value let(Value symbol, Value binding, Value table) {
+    while (!is_empty(table))
+        if (is_true(eq(car(car(table)), symbol)))
+            return cons(cons(symbol, binding), cdr(table));
+        else
+            return cons(car(table), let(symbol, binding, cdr(table)));
+
+}
+
+Value lambda(Value symbol, Value body) {
+    Value l = cons(symbol, body);
+    l.tag = Lambda;
+    return l;
+}
+
+Value apply(Value lambda_pair, Value arg, Value env) {
+    Value symbol = head(lambda_pair);
+    Value body = tail(lambda_pair);
+    Value new_env = let(symbol, arg, env);
+    return eval(body, new_env);
 }
 
 // why is cond the only builtin that needs to take `env`? revisit this
-Value cond(Value condition, Value consequent, Value alternate, Table env) {
+Value cond(Value condition, Value consequent, Value alternate, Value env) {
     return eval(condition, env).tag == Truth ? eval(consequent, env) : eval(alternate, env);
+}
+
+Value eval_empty(Value arg) {
+  return eval(arg, cons(nil(), nil()));
 }
 
 // i have a hunch that pass-by-value here simplifies the implementation of closures
@@ -174,7 +159,7 @@ Value cond(Value condition, Value consequent, Value alternate, Table env) {
 // should we push `eval` decisions down into the implementations of builtins?
 // tradeoff: each builtin has to take an `env` argument, and eval in that context, but
 // the implementation of `eval` gets much smaller and perhaps easier to read
-Value eval(Value arg, Table env) {
+Value eval(Value arg, Value env) {
     if (arg.tag == ConsCell) {
         Value operator = car(arg);
         Value operands = cdr(arg);
@@ -227,7 +212,7 @@ Value eval(Value arg, Table env) {
             Value symbol = car(bindings);
             Value value = eval(car(cdr(bindings)), env);
             Value body = car(cdr(operands));
-            Table new_env = let(symbol, value, env);
+            Value new_env = let(symbol, value, env);
             return eval(body, new_env);
         } else {
           printValue(operator);
@@ -346,19 +331,5 @@ void printList(Value l) {
     }
     if (l.tag != Nil) printValue(l);
     printf(")");
-}
-
-void printEnv(Table t) {
-    printf("Env: ");
-    for (int i=0; i < 256; i++) {
-      printf("\n");
-      printf("Symbol #%d: ", i);
-      printValue(t.key[i].head);
-      printf("\n");
-      printf("Binding: ");
-      printValue(t.key[i].tail);
-    }
-    printf("End env.");
-    printf("\n");
 }
 #endif
