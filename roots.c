@@ -37,7 +37,7 @@ Value cons(Value head, Value tail) {
 }
 
 Value head(Value v) {
-    if (v.tag != ConsCell) {
+    if (v.tag != ConsCell && v.tag != Lambda) {
         printf("Error, calling head on a non-list value.\n");
         return nil();
     } else {
@@ -46,7 +46,7 @@ Value head(Value v) {
 }
     
 Value tail(Value v) {
-    if (v.tag != ConsCell)
+    if (v.tag != ConsCell && v.tag != Lambda)
         printf("Error, calling tail on a non-list value.\n");
     else
         return v.data.list->tail;
