@@ -83,28 +83,51 @@ bool symeq(Value sym, char *str) {
     return sym.tag == Symbol && streq(sym.data.symbol, str);
 }
 
+Value lookup(Value symbol, Table table) {
+    for(int i=0; i < 256; i++) {
+        if (table.key[i].head.tag == Nil) {
+            break;
+        }
+        if (symeq(symbol, table.key[i].head.data.symbol)) { // is it just me or is this gross 
+            return table.key[i].tail;
+        }
+    }
+
+    return nil();
+}
+
+Table let(Value symbol, Value binding, Table table) {
+    Table new_env;
+    for(int i=0; i < 256; i++) {
+        Cons current_pair = table.key[i];
+        if (current_pair.head.tag == Nil) {
+            new_env.key[i].head = symbol;
+            new_env.key[i].tail = binding;
+            break;
+        } else if (current_pair.head.tag == Symbol && symeq(symbol, current_pair.head.data.symbol)) {
+            new_env.key[i].tail = binding;
+            break;
+        } else { // copy over values that aren't changing
+            new_env.key[i].head = table.key[i].head;
+            new_env.key[i].tail = table.key[i].tail;
+        }
+    }
+
+    // printEnv(new_env);
+    return new_env;
+}
+
 Value lambda(Value symbol, Value body) {
-    Value l = cons(symbol, body); // representing lambdas as simply as possible
+    Value l = cons(symbol, body);
     l.tag = Lambda;
     return l;
 }
 
-// this is the wrong implementation of lambda; we should take an env
-// as an argument, and create a new env with the old env + the new 
-// bindings, and eval all the things with that new env
-Value apply(Value lambda_pair, Value arg) {
-    // swap the arg into all occurrences of symbol in the lambda body
-    // representing lambdas as a simple (symbol, body) pair for now
+Value apply(Value lambda_pair, Value arg, Table env) {
     Value symbol = head(lambda_pair);
     Value body = tail(lambda_pair);
-    if (body.tag == ConsCell) {
-        return cons(apply(lambda(symbol, head(body)), arg),
-                    apply(lambda(symbol, tail(body)), arg));
-    } else if (body.tag == Symbol && symeq(body, symbol.data.symbol)) {
-        return arg;
-    } else {
-        return body;
-    }
+    Table new_env = let(symbol, arg, env);
+    return eval(body, new_env);
 }
 
 Value quote(Value arg) {
@@ -143,40 +166,6 @@ Value cdr(Value arg) {
 // why is cond the only builtin that needs to take `env`? revisit this
 Value cond(Value condition, Value consequent, Value alternate, Table env) {
     return eval(condition, env).tag == Truth ? eval(consequent, env) : eval(alternate, env);
-}
-
-Value lookup(Value symbol, Table table) {
-    for(int i=0; i < 256; i++) {
-        if (table.key[i].head.tag == Nil) {
-            break;
-        }
-        if (symeq(symbol, table.key[i].head.data.symbol)) { // is it just me or is this gross 
-            return table.key[i].tail;
-        }
-    }
-
-    return nil();
-}
-
-Table let(Value symbol, Value binding, Table table) {
-    Table new_env;
-    for(int i=0; i < 256; i++) {
-        Cons current_pair = table.key[i];
-        if (current_pair.head.tag == Nil) {
-            new_env.key[i].head = symbol;
-            new_env.key[i].tail = binding;
-            break;
-        } else if (current_pair.head.tag == Symbol && symeq(symbol, current_pair.head.data.symbol)) {
-            new_env.key[i].tail = binding;
-            break;
-        } else { // copy over values that aren't changing
-            new_env.key[i].head = table.key[i].head;
-            new_env.key[i].tail = table.key[i].tail;
-        }
-    }
-
-    // printEnv(new_env);
-    return new_env;
 }
 
 // i have a hunch that pass-by-value here simplifies the implementation of closures
@@ -231,7 +220,7 @@ Value eval(Value arg, Table env) {
             Value body = car(cdr(operands));
             return lambda(symbol, body);
         } else if (operator.tag == Lambda) {
-            return eval(apply(operator, car(operands)), env);
+            return apply(operator, car(operands), env);
         } else if (symeq(operator, "let")) {
             // (let (x 1) x) => 1
             Value bindings = car(operands);
