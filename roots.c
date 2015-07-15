@@ -138,6 +138,7 @@ Value cdr(Value arg) {
     return tail(arg);
 }
 
+// why is cond the only builtin that needs to take `env`? revisit this
 Value cond(Value condition, Value consequent, Value alternate, Table env) {
     return eval(condition, env).tag == Truth ? eval(consequent, env) : eval(alternate, env);
 }
