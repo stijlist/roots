@@ -37,6 +37,7 @@ Value cons(Value head, Value tail) {
 }
 
 Value head(Value v) {
+    // why is type information about lambda leaking into `head`?
     if (v.tag != ConsCell && v.tag != Lambda) {
         printf("Error, calling head on a non-list value.\n");
         return nil();
@@ -46,6 +47,7 @@ Value head(Value v) {
 }
     
 Value tail(Value v) {
+    // why is type information about lambda leaking into `tail`?
     if (v.tag != ConsCell && v.tag != Lambda)
         printf("Error, calling tail on a non-list value.\n");
     else
