@@ -45,5 +45,6 @@ int main() {
     eval_and_print("((lambda x (cons 1 x)) 2)", env);
   
     eval_and_print("((lambda x ((lambda y (cons x y)) 2)) 1)", env);
+    eval_and_print("((lambda x ((lambda x (cons x x)) 2)) 1)", env);
     return 0;
 }
