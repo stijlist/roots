@@ -87,6 +87,9 @@ Value lambda(Value symbol, Value body) {
     return l;
 }
 
+// this is the wrong implementation of lambda; we should take an env
+// as an argument, and create a new env with the old env + the new 
+// bindings, and eval all the things with that new env
 Value apply(Value lambda_pair, Value arg) {
     // swap the arg into all occurrences of symbol in the lambda body
     // representing lambdas as a simple (symbol, body) pair for now
