@@ -58,7 +58,7 @@ Value tail(Value v) {
 
 // not certain of the correctness of this function
 bool is_empty(Value v) {
-    return v.tag == ConsCell && head(v).tag == Nil && tail(v).tag == Nil;
+    return v.tag == Nil || (v.tag == ConsCell && head(v).tag == Nil && tail(v).tag == Nil);
 }
 
 bool is_true(Value v) {
