@@ -111,24 +111,30 @@ Value eq(Value arg1, Value arg2) {
 }
 
 Value lookup(Value symbol, Value table) {
-    while (!is_empty(table))
-        if (is_true(eq(car(car(table)), symbol)))
+    if(!is_empty(table)) {
+        if (is_true(eq(car(car(table)), symbol))) {
             return cdr(car(table));
-        else
+        } else {
             return lookup(symbol, cdr(table));
+        }
+    }
           
     printf("Failed to find symbol ");
     printValue(symbol);
     printf("\n");
+    return nil();
 }
 
 Value let(Value symbol, Value binding, Value table) {
-    while (!is_empty(table))
-        if (is_true(eq(car(car(table)), symbol)))
+    if (!is_empty(table)) {
+        if (is_true(eq(car(car(table)), symbol))) {
             return cons(cons(symbol, binding), cdr(table));
-        else
+        } else {
             return cons(car(table), let(symbol, binding, cdr(table)));
-
+        }
+    } else {
+        return cons(cons(symbol, binding), nil());
+    }
 }
 
 Value lambda(Value symbol, Value body) {
