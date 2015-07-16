@@ -75,7 +75,6 @@ Value cdr(Value arg) {
     return tail(arg);
 }
 
-// potential optimization: store symbols in a symbol table
 bool streq(char *str1, char *str2) {
     for (int i=0; (str1[i] != '\0' && str2[i] != '\0'); i++)
         if (str1[i] != str2[i]) return false;
