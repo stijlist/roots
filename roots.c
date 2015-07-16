@@ -57,6 +57,8 @@ Value tail(Value v) {
 }
 
 // not certain of the correctness of this function
+// should solitary nils and dotted pairs of nils be interchangeable?
+// probably not!
 bool is_empty(Value v) {
     return v.tag == Nil || (v.tag == ConsCell && head(v).tag == Nil && tail(v).tag == Nil);
 }
