@@ -26,7 +26,7 @@ int main() {
     eval_and_print("(eq 1 (car (quote (1 2))))");
     eval_and_print("(eq (quote foo) (car (cons (quote foo) (quote bar))))");
 
-    eval_and_print("(atom foo)");
+    eval_and_print("(atom (quote foo))");
     eval_and_print("(atom (quote (1 2)))");
 
     eval_and_print("(if t 1 0)");
