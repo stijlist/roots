@@ -15,9 +15,8 @@ Value nil() {
     return (Value) { (Data) 0, Nil };
 }
 
-// could use an arbitrary symbol to indicate truth 
-// and return true for all non-nil / empty values 
-// but then it would be possible to redefine that 
+// could use an arbitrary symbol to indicate truth and return true for all 
+// non-nil / empty values but then it would be possible to redefine that 
 // particular symbol
 Value truth() {
     return (Value) { (Data) 1, Truth };
