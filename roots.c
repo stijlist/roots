@@ -15,8 +15,8 @@ Value nil() {
     return (Value) { (Data) 0, Nil };
 }
 
-// design flaw? should I need to tag truthy values? 
-// NOTE: reexamine this after you've implemented define
+// could use an arbitrary symbol here but then it would
+// be possible to redefine that particular symbol
 Value truth() {
     return (Value) { (Data) 1, Truth };
 }
@@ -149,6 +149,10 @@ Value eval_empty(Value arg) {
   return eval(arg, cons(nil(), nil()));
 }
 
+Value first(Value list) { return head(list); }
+Value second(Value list) { return head(tail(list)); }
+Value third(Value list) { return head(tail(tail(list))); }
+
 // i have a hunch that pass-by-value here simplifies the implementation of closures
 // all builtins are fixed-arity; we can implement variable arity as macros
 //
@@ -159,41 +163,34 @@ Value eval(Value arg, Value env) {
     if (arg.tag == ConsCell) {
         Value operator = head(arg);
         Value operands = tail(arg);
-        if (!is_true(atom(operator))) {
+
+        // if the operator is a list, try and reduce it to an atom
+        if (operator.tag == ConsCell) {
           operator = eval(operator, env);
         }
 
         if (operator.tag == Lambda) {
             return apply(operator, head(operands), env);
         } else if (symeq(operator, "quote")) {
-            return quote(head(operands));
+            return quote(first(operands));
         } else if (symeq(operator, "atom")) {
-            return atom(eval(head(operands), env));
+            return atom(eval(first(operands), env));
         } else if (symeq(operator, "eq")) {
-            return eq(eval(head(operands), env), eval(head(tail(operands)), env));
+            return eq(eval(first(operands), env), eval(second(operands), env));
         } else if (symeq(operator, "head")) {
-            Value arg = head(operands);
-            return head(eval(arg, env));
+            return head(eval(first(operands), env));
         } else if (symeq(operator, "tail")) {
-            Value arg = head(operands);
-            return tail(eval(arg, env));
+            return tail(eval(first(operands), env));
         } else if (symeq(operator, "cons")) {
-            return cons(eval(head(operands), env), eval(head(tail(operands)), env));
+            return cons(eval(first(operands), env), eval(second(operands), env));
         } else if (symeq(operator, "if")) {
-            Value test = head(operands);
-            Value consequent = head(tail(operands));
-            Value alternate = head(tail(tail(operands)));
-            return cond(test, consequent, alternate, env);
+            return cond(first(operands), second(operands), third(operands), env);
         } else if (symeq(operator, "lambda")) {
-            Value symbol = head(operands);
-            Value body = head(tail(operands));
-            return lambda(symbol, body);
+            return lambda(first(operands), second(operands));
         } else if (symeq(operator, "let")) {
-            Value bindings = head(operands);
-            Value symbol = head(bindings);
-            Value value = eval(head(tail(bindings)), env);
-            Value body = head(tail(operands));
-            Value new_env = let(symbol, value, env);
+            Value bindings = first(operands);
+            Value body = second(operands);
+            Value new_env = let(first(bindings), eval(second(bindings), env), env);
             return eval(body, new_env);
         } else {
           printValue(operator);
