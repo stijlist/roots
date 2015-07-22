@@ -63,7 +63,7 @@ bool is_empty(Value v) {
 }
 
 bool is_true(Value v) {
-    return v.tag == Truth;
+    return !is_empty(v);
 }
 
 bool streq(char *str1, char *str2) {
@@ -153,15 +153,14 @@ Value eval(Value arg, Value env) {
     if (arg.tag == ConsCell) {
         Value operator = head(arg);
         Value operands = tail(arg);
+        Value fn;
 
         // if the operator is a list, try and reduce it to an atom
         if (operator.tag == ConsCell) {
           operator = eval(operator, env);
         }
 
-        if (operator.tag == Lambda) {
-            return apply(operator, first(operands), env);
-        } else if (symeq(operator, "quote")) {
+        if (symeq(operator, "quote")) {
             return first(operands);
         } else if (symeq(operator, "atom")) {
             return atom(eval(first(operands), env));
@@ -181,9 +180,13 @@ Value eval(Value arg, Value env) {
             Value bindings = first(operands);
             Value new_env = let(first(bindings), eval(second(bindings), env), env);
             return eval(second(operands), new_env);
+        } else if (operator.tag == Lambda) {
+            return apply(operator, first(operands), env);
+        } else if ((fn = lookup(operator, env)).tag == Lambda){
+            return apply(fn, first(operands), env);
         } else {
-          printValue(operator);
-          printf(" is not a function.\n");
+            printValue(operator);
+            printf(" is not a function.\n");
         }
     } else {
         if (arg.tag == Symbol) {
