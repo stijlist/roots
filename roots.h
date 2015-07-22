@@ -42,6 +42,6 @@ bool is_empty(Value v);
 Value car(Value arg);
 Value eval_empty(Value arg);
 Value eval(Value arg, Value env);
-ParseResult parse(char *cursor);
+ParseResult read(char *cursor);
 void printList(Value l); 
 void printValue(Value v);

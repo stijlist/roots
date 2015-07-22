@@ -37,7 +37,7 @@ Value cons(Value head, Value tail) {
 }
 
 Value head(Value v) {
-    // why is type information about lambda leaking into `head`?
+    // lambdas are implemented using the cons cell structure but a different type tag
     if (v.tag != ConsCell && v.tag != Lambda) {
         printf("Error, calling head on a non-list value.\n");
         return nil();
@@ -47,18 +47,16 @@ Value head(Value v) {
 }
     
 Value tail(Value v) {
-    // why is type information about lambda leaking into `tail`?
-    if (v.tag != ConsCell && v.tag != Lambda)
-        printf("Error, calling tail on a non-list value.\n");
-    else
+    // lambdas are implemented using the cons cell structure but a different type tag
+    if (v.tag == ConsCell || v.tag == Lambda)
         return v.data.list->tail;
+    else
+        printf("Error, calling tail on a non-list value.\n");
 
     return nil();
 }
 
-// not certain of the correctness of this function
-// should solitary nils and dotted pairs of nils be interchangeable?
-// probably not!
+// nils and dotted pairs of nils are interchangeable to facilitate lisp nil-punning
 bool is_empty(Value v) {
     return v.tag == Nil || (v.tag == ConsCell && head(v).tag == Nil && tail(v).tag == Nil);
 }
@@ -143,7 +141,6 @@ Value apply(Value lambda_pair, Value arg, Value env) {
     return eval(body, new_env);
 }
 
-// why is cond the only builtin that needs to take `env`? revisit this
 Value cond(Value condition, Value consequent, Value alternate, Value env) {
     return eval(condition, env).tag == Truth ? eval(consequent, env) : eval(alternate, env);
 }
@@ -259,14 +256,14 @@ ParseResult parselist(char *cursor) {
     if (is_close_paren(*cursor)) {
         return (ParseResult) { ++cursor, nil() };
     } else { 
-        ParseResult result = parse(cursor);
+        ParseResult result = read(cursor);
         ParseResult remaining = parselist(result.newcursor);
         Value rest = cons(result.value, remaining.value);
         return (ParseResult) { remaining.newcursor, rest };
     }
 }
 
-ParseResult parse(char *cursor) {
+ParseResult read(char *cursor) {
     cursor = next_value_at(cursor);
     if (is_open_paren(*cursor)) {
         return parselist(++cursor); // consume a paren
