@@ -189,9 +189,8 @@ Value eval(Value arg, Value env) {
             return lambda(first(operands), second(operands));
         } else if (symeq(operator, "let")) {
             Value bindings = first(operands);
-            Value body = second(operands);
             Value new_env = let(first(bindings), eval(second(bindings), env), env);
-            return eval(body, new_env);
+            return eval(second(operands), new_env);
         } else {
           printValue(operator);
           printf(" is not a function.\n");
@@ -268,9 +267,6 @@ ParseResult read(char *cursor) {
         return parsesym(cursor);
     } else if (is_num(*cursor)) {
         return parsenum(cursor);
-    // mistake? if we encounter a null before hitting a close paren, we should fall through to the error case
-    } else if (*cursor == 0) { 
-        return (ParseResult) { cursor, nil() };
     } else {
         printf("Problem reading buffer at:\n %s\n", cursor);
         return (ParseResult) { cursor, nil() };
