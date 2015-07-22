@@ -141,7 +141,7 @@ Value cond(Value condition, Value consequent, Value alternate, Value env) {
 }
 
 Value eval_empty(Value arg) {
-  return eval(arg, cons(nil(), nil()));
+    return eval(arg, cons(nil(), nil()));
 }
 
 Value first(Value list) { return head(list); }
