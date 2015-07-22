@@ -222,7 +222,7 @@ ParseResult parsesym(char *cursor) {
 }
 
 char* next_value_at(char *cursor) {
-    while (*cursor == ' ' || *cursor == '\t') 
+    while (*cursor == ' ' || *cursor == '\t' || *cursor == '\n') 
         cursor++;
     return cursor;
 }
