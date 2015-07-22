@@ -153,12 +153,7 @@ Value first(Value list) { return head(list); }
 Value second(Value list) { return head(tail(list)); }
 Value third(Value list) { return head(tail(tail(list))); }
 
-// i have a hunch that pass-by-value here simplifies the implementation of closures
 // all builtins are fixed-arity; we can implement variable arity as macros
-//
-// should we push `eval` decisions down into the implementations of builtins?
-// tradeoff: each builtin has to take an `env` argument, and eval in that context, but
-// the implementation of `eval` gets much smaller and perhaps easier to read
 Value eval(Value arg, Value env) {
     if (arg.tag == ConsCell) {
         Value operator = head(arg);
