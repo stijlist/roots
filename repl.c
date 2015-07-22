@@ -8,11 +8,10 @@ char* get_line() {
 
 void repl() {
     char* input;
-    do { 
-      input = get_line();
+    while ((input = get_line()) != NULL) { 
       printValue(eval_empty(read(input).value));
       printf("\n");
-    } while (input != NULL);
+    } 
 }
 
 int main() { repl(); }
