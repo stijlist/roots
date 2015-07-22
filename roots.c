@@ -284,6 +284,7 @@ void printValue(Value v) {
             printValue(head(v));
             printf(" ");
             printValue(tail(v));
+            break;
         case Truth:
             printf("t");
     }
