@@ -15,8 +15,10 @@ Value nil() {
     return (Value) { (Data) 0, Nil };
 }
 
-// could use an arbitrary symbol here but then it would
-// be possible to redefine that particular symbol
+// could use an arbitrary symbol to indicate truth 
+// and return true for all non-nil / empty values 
+// but then it would be possible to redefine that 
+// particular symbol
 Value truth() {
     return (Value) { (Data) 1, Truth };
 }
@@ -38,11 +40,11 @@ Value cons(Value head, Value tail) {
 
 Value head(Value v) {
     // lambdas are implemented using the cons cell structure but a different type tag
-    if (v.tag != ConsCell && v.tag != Lambda) {
+    if (v.tag == ConsCell || v.tag == Lambda) {
+        return v.data.list->head;
+    } else {
         printf("Error, calling head on a non-list value.\n");
         return nil();
-    } else {
-        return v.data.list->head;
     }
 }
     
@@ -74,10 +76,6 @@ bool streq(char *str1, char *str2) {
 
 bool symeq(Value sym, char *str) {
     return sym.tag == Symbol && streq(sym.data.symbol, str);
-}
-
-Value quote(Value arg) {
-    return arg;
 }
 
 Value atom(Value arg) {
@@ -135,10 +133,8 @@ Value lambda(Value symbol, Value body) {
 }
 
 Value apply(Value lambda_pair, Value arg, Value env) {
-    Value symbol = head(lambda_pair);
-    Value body = tail(lambda_pair);
-    Value new_env = let(symbol, arg, env);
-    return eval(body, new_env);
+    Value new_env = let(head(lambda_pair), arg, env);
+    return eval(tail(lambda_pair), new_env);
 }
 
 Value cond(Value condition, Value consequent, Value alternate, Value env) {
@@ -149,6 +145,7 @@ Value eval_empty(Value arg) {
   return eval(arg, cons(nil(), nil()));
 }
 
+// these functions make eval more readable
 Value first(Value list) { return head(list); }
 Value second(Value list) { return head(tail(list)); }
 Value third(Value list) { return head(tail(tail(list))); }
@@ -165,9 +162,9 @@ Value eval(Value arg, Value env) {
         }
 
         if (operator.tag == Lambda) {
-            return apply(operator, head(operands), env);
+            return apply(operator, first(operands), env);
         } else if (symeq(operator, "quote")) {
-            return quote(first(operands));
+            return first(operands);
         } else if (symeq(operator, "atom")) {
             return atom(eval(first(operands), env));
         } else if (symeq(operator, "eq")) {
