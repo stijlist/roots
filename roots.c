@@ -177,44 +177,31 @@ Value eval(Value arg, Value env) {
         }
 
         if (symeq(operator, "quote")) {
-            // only takes one argument; ignores the rest
-            // doesn't evaluate its arguments
-            // (quote (1 2 3)) => (1 2 3)
-            // (quote (1 2 3) 4) => (1 2 3)
             return quote(car(operands));
         } else if (symeq(operator, "atom")) {
-            // only takes one argument
             return atom(eval(car(operands), env));
         } else if (symeq(operator, "eq")) {
-            // (eq 1 1) => t
             return eq(eval(car(operands), env), eval(car(cdr(operands)), env));
         } else if (symeq(operator, "car")) {
-            // (car (1 2 3)) => 1
             Value arg = car(operands);
             return car(eval(arg, env));
         } else if (symeq(operator, "cdr")) {
-            // (cdr (1 2 3)) => (2 3)
             Value arg = car(operands);
             return cdr(eval(arg, env));
         } else if (symeq(operator, "cons")) {
-            // (cons 1 (2 3)) => (1 2 3)
             return cons(eval(car(operands), env), eval(car(cdr(operands)), env));
         } else if (symeq(operator, "if")) {
-            // (if t 1 0) => 1
             Value test = car(operands);
             Value consequent = car(cdr(operands));
             Value alternate = car(cdr(cdr(operands)));
             return cond(test, consequent, alternate, env);
         } else if (symeq(operator, "lambda")) {
-            // ((lambda x (cons 1 x)) 2) => (1 2)
-            // (((lambda x (lambda y (cons x y))) 1) 2) => (1 2)
             Value symbol = car(operands);
             Value body = car(cdr(operands));
             return lambda(symbol, body);
         } else if (operator.tag == Lambda) {
             return apply(operator, car(operands), env);
         } else if (symeq(operator, "let")) {
-            // (let (x 1) x) => 1
             Value bindings = car(operands);
             Value symbol = car(bindings);
             Value value = eval(car(cdr(bindings)), env);
@@ -297,7 +284,8 @@ ParseResult parse(char *cursor) {
         return parsesym(cursor);
     } else if (is_num(*cursor)) {
         return parsenum(cursor);
-    } else if (*cursor == 0) {
+    // mistake? if we encounter a null before hitting a close paren, we should fall through to the error case
+    } else if (*cursor == 0) { 
         return (ParseResult) { cursor, nil() };
     } else {
         printf("Problem reading buffer at:\n %s\n", cursor);
