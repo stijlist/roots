@@ -18,3 +18,8 @@ main:
 
 run: all
 	./test.out
+
+repl: main
+	cc -c repl.c
+	cc roots.o repl.o -o repl.out
+	./repl.out
