@@ -13,18 +13,18 @@ int main() {
     eval_and_print("(cons 1 2)");
     eval_and_print("(cons 1 (quote (2 3)))");
     eval_and_print("(cons (quote (1 2)) 3)");
-    eval_and_print("(car (quote (1 2)))");
-    eval_and_print("(cdr (quote (1 2)))");
+    eval_and_print("(head (quote (1 2)))");
+    eval_and_print("(tail (quote (1 2)))");
     eval_and_print("(quote (1 2))");
     eval_and_print("(eq (quote foo) (quote foo))");
     eval_and_print("(eq (quote foo) (quote bar))");
     eval_and_print("(eq 1 1)");
-    eval_and_print("(eq (car (quote (1))) 1)");
+    eval_and_print("(eq (head (quote (1))) 1)");
 
-    eval_and_print("(car (quote (foo bar)))");
+    eval_and_print("(head (quote (foo bar)))");
 
-    eval_and_print("(eq 1 (car (quote (1 2))))");
-    eval_and_print("(eq (quote foo) (car (cons (quote foo) (quote bar))))");
+    eval_and_print("(eq 1 (head (quote (1 2))))");
+    eval_and_print("(eq (quote foo) (head (cons (quote foo) (quote bar))))");
 
     eval_and_print("(atom (quote foo))");
     eval_and_print("(atom (quote (1 2)))");

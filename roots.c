@@ -67,14 +67,6 @@ bool is_true(Value v) {
     return v.tag == Truth;
 }
 
-Value car(Value arg) {
-    return head(arg);
-}
-
-Value cdr(Value arg) {
-    return tail(arg);
-}
-
 bool streq(char *str1, char *str2) {
     for (int i=0; (str1[i] != '\0' && str2[i] != '\0'); i++)
         if (str1[i] != str2[i]) return false;
@@ -113,10 +105,10 @@ Value eq(Value arg1, Value arg2) {
 
 Value lookup(Value symbol, Value table) {
     if(!is_empty(table)) {
-        if (is_true(eq(car(car(table)), symbol))) {
-            return cdr(car(table));
+        if (is_true(eq(head(head(table)), symbol))) {
+            return tail(head(table));
         } else {
-            return lookup(symbol, cdr(table));
+            return lookup(symbol, tail(table));
         }
     }
           
@@ -128,10 +120,10 @@ Value lookup(Value symbol, Value table) {
 
 Value let(Value symbol, Value binding, Value table) {
     if (!is_empty(table)) {
-        if (is_true(eq(car(car(table)), symbol))) {
-            return cons(cons(symbol, binding), cdr(table));
+        if (is_true(eq(head(head(table)), symbol))) {
+            return cons(cons(symbol, binding), tail(table));
         } else {
-            return cons(car(table), let(symbol, binding, cdr(table)));
+            return cons(head(table), let(symbol, binding, tail(table)));
         }
     } else {
         return cons(cons(symbol, binding), nil());
@@ -168,44 +160,44 @@ Value eval_empty(Value arg) {
 // the implementation of `eval` gets much smaller and perhaps easier to read
 Value eval(Value arg, Value env) {
     if (arg.tag == ConsCell) {
-        Value operator = car(arg);
-        Value operands = cdr(arg);
+        Value operator = head(arg);
+        Value operands = tail(arg);
         // should probably be checking
-        // if(atom(operator))
-        if (operator.tag == ConsCell) {
+        // if(!atom(operator))
+        if (!is_true(atom(operator))) {
           operator = eval(operator, env);
         }
 
-        if (symeq(operator, "quote")) {
-            return quote(car(operands));
+        if (operator.tag == Lambda) {
+            return apply(operator, head(operands), env);
+        } else if (symeq(operator, "quote")) {
+            return quote(head(operands));
         } else if (symeq(operator, "atom")) {
-            return atom(eval(car(operands), env));
+            return atom(eval(head(operands), env));
         } else if (symeq(operator, "eq")) {
-            return eq(eval(car(operands), env), eval(car(cdr(operands)), env));
-        } else if (symeq(operator, "car")) {
-            Value arg = car(operands);
-            return car(eval(arg, env));
-        } else if (symeq(operator, "cdr")) {
-            Value arg = car(operands);
-            return cdr(eval(arg, env));
+            return eq(eval(head(operands), env), eval(head(tail(operands)), env));
+        } else if (symeq(operator, "head")) {
+            Value arg = head(operands);
+            return head(eval(arg, env));
+        } else if (symeq(operator, "tail")) {
+            Value arg = head(operands);
+            return tail(eval(arg, env));
         } else if (symeq(operator, "cons")) {
-            return cons(eval(car(operands), env), eval(car(cdr(operands)), env));
+            return cons(eval(head(operands), env), eval(head(tail(operands)), env));
         } else if (symeq(operator, "if")) {
-            Value test = car(operands);
-            Value consequent = car(cdr(operands));
-            Value alternate = car(cdr(cdr(operands)));
+            Value test = head(operands);
+            Value consequent = head(tail(operands));
+            Value alternate = head(tail(tail(operands)));
             return cond(test, consequent, alternate, env);
         } else if (symeq(operator, "lambda")) {
-            Value symbol = car(operands);
-            Value body = car(cdr(operands));
+            Value symbol = head(operands);
+            Value body = head(tail(operands));
             return lambda(symbol, body);
-        } else if (operator.tag == Lambda) {
-            return apply(operator, car(operands), env);
         } else if (symeq(operator, "let")) {
-            Value bindings = car(operands);
-            Value symbol = car(bindings);
-            Value value = eval(car(cdr(bindings)), env);
-            Value body = car(cdr(operands));
+            Value bindings = head(operands);
+            Value symbol = head(bindings);
+            Value value = eval(head(tail(bindings)), env);
+            Value body = head(tail(operands));
             Value new_env = let(symbol, value, env);
             return eval(body, new_env);
         } else {
