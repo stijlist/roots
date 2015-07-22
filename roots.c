@@ -162,8 +162,6 @@ Value eval(Value arg, Value env) {
     if (arg.tag == ConsCell) {
         Value operator = head(arg);
         Value operands = tail(arg);
-        // should probably be checking
-        // if(!atom(operator))
         if (!is_true(atom(operator))) {
           operator = eval(operator, env);
         }
