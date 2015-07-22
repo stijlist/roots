@@ -38,7 +38,7 @@ Value cons(Value head, Value tail) {
 }
 
 Value head(Value v) {
-    // lambdas are implemented using the cons cell structure but a different type tag
+    // lambdas are implemented using the cons cell structure but a different tag
     if (v.tag == ConsCell || v.tag == Lambda) {
         return v.data.list->head;
     } else {
@@ -48,7 +48,7 @@ Value head(Value v) {
 }
     
 Value tail(Value v) {
-    // lambdas are implemented using the cons cell structure but a different type tag
+    // lambdas are implemented using the cons cell structure but a different tag
     if (v.tag == ConsCell || v.tag == Lambda)
         return v.data.list->tail;
     else
@@ -57,7 +57,7 @@ Value tail(Value v) {
     return nil();
 }
 
-// nils and dotted pairs of nils are interchangeable to facilitate lisp nil-punning
+// nils and dotted pairs of nils are interchangeable for nil-punning
 bool is_empty(Value v) {
     return v.tag == Nil || (v.tag == ConsCell && head(v).tag == Nil && tail(v).tag == Nil);
 }
@@ -137,14 +137,13 @@ Value apply(Value lambda_pair, Value arg, Value env) {
 }
 
 Value cond(Value condition, Value consequent, Value alternate, Value env) {
-    return eval(condition, env).tag == Truth ? eval(consequent, env) : eval(alternate, env);
+    return is_true(eval(condition, env)) ? eval(consequent, env) : eval(alternate, env);
 }
 
 Value eval_empty(Value arg) {
   return eval(arg, cons(nil(), nil()));
 }
 
-// these functions make eval more readable
 Value first(Value list) { return head(list); }
 Value second(Value list) { return head(tail(list)); }
 Value third(Value list) { return head(tail(tail(list))); }
