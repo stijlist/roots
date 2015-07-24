@@ -50,6 +50,7 @@ bool is_empty(Value v);
 Value car(Value arg);
 Value eval_empty(Value arg);
 Value eval(Value arg, Value env);
-ParseResult read(char *cursor);
+ParseResult parse(char *cursor);
+Value read(char *string);
 void printList(Value l); 
 void printValue(Value v);

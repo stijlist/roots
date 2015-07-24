@@ -3,7 +3,7 @@
 void read_eval_print(char *list) {
     printf("%s\n", list); 
     printf("=> ");
-    printValue(eval_empty(read(list).value));
+    printValue(eval_empty(read(list)));
     printf("\n");
 }
 

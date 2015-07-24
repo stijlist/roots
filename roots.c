@@ -263,14 +263,14 @@ ParseResult parselist(char *cursor) {
     if (is_close_paren(*cursor)) {
         return (ParseResult) { ++cursor, nil() };
     } else { 
-        ParseResult result = read(cursor);
+        ParseResult result = parse(cursor);
         ParseResult remaining = parselist(result.newcursor);
         Value rest = cons(result.value, remaining.value);
         return (ParseResult) { remaining.newcursor, rest };
     }
 }
 
-ParseResult read(char *cursor) {
+ParseResult parse(char *cursor) {
     cursor = next_value_at(cursor);
     if (is_open_paren(*cursor)) {
         return parselist(++cursor); // consume a paren
@@ -282,6 +282,10 @@ ParseResult read(char *cursor) {
         printf("Problem reading buffer at:\n %s\n", cursor);
         return (ParseResult) { cursor, nil() };
     }
+}
+
+Value read(char* string) {
+    return parse(string).value;
 }
 
 void printValue(Value v) {
