@@ -38,8 +38,7 @@ Value cons(Value head, Value tail) {
 }
 
 Value head(Value v) {
-    // lambdas are implemented using the cons cell structure but a different tag
-    if (v.tag == ConsCell || v.tag == Lambda) {
+    if (v.tag == ConsCell) {
         return v.data.list->head;
     } else {
         printf("Error, calling head on a non-list value.\n");
@@ -48,8 +47,7 @@ Value head(Value v) {
 }
     
 Value tail(Value v) {
-    // lambdas are implemented using the cons cell structure but a different tag
-    if (v.tag == ConsCell || v.tag == Lambda)
+    if (v.tag == ConsCell)
         return v.data.list->tail;
     else
         printf("Error, calling tail on a non-list value.\n");
@@ -125,15 +123,23 @@ Value let(Value symbol, Value binding, Value table) {
     }
 }
 
-Value lambda(Value symbol, Value body) {
-    Value l = cons(symbol, body);
-    l.tag = Lambda;
-    return l;
+Value merge(Value base, Value overlay) {}
+
+Value make_closure(Value symbol, Value body, Value env) {
+    Closure* closure = malloc(sizeof(Closure));
+    closure->symbol = symbol;
+    closure->body = body;
+    closure->env = env;
+    return (Value) { (Data) closure, Lambda };
 }
 
-Value apply(Value lambda_pair, Value arg, Value env) {
-    Value new_env = let(head(lambda_pair), arg, env);
-    return eval(tail(lambda_pair), new_env);
+Value lambda(Value symbol, Value body, Value env) {
+    return make_closure(symbol, body, env);
+}
+
+Value apply(Value closure, Value arg, Value env) {
+    Value new_env = let(closure->symbol, arg, merge(env, closure->env));
+    return eval(closure->body, new_env);
 }
 
 Value cond(Value condition, Value consequent, Value alternate, Value env) {
@@ -175,7 +181,7 @@ Value eval(Value arg, Value env) {
         } else if (symeq(operator, "if")) {
             return cond(first(operands), second(operands), third(operands), env);
         } else if (symeq(operator, "lambda")) {
-            return lambda(first(operands), second(operands));
+            return lambda(first(operands), second(operands), env);
         } else if (symeq(operator, "let")) {
             Value bindings = first(operands);
             Value new_env = let(first(bindings), eval(second(bindings), env), env);

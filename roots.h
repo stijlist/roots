@@ -16,6 +16,7 @@ typedef enum {
 } TypeTag;
 
 typedef struct _value Value;
+typedef struct _closure Closure;
 typedef struct _cons Cons;
 typedef union _data Data;
 
@@ -24,6 +25,7 @@ struct _value {
         int number;
         Cons *list;
         char *symbol;
+        Closure *closure;
     } data;
     TypeTag tag;
 };
@@ -31,6 +33,12 @@ struct _value {
 struct _cons {
     Value head;
     Value tail;
+};
+
+struct _closure {
+    Value symbol;
+    Value body;
+    Value env;
 };
 
 typedef struct _parseresult {
