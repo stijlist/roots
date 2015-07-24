@@ -47,5 +47,6 @@ int main() {
     read_eval_print("((lambda x ((lambda x (cons x x)) 2)) 1)");
     
     read_eval_print("(let (f (lambda x x)) (f 1))");
+    read_eval_print("(lambda x x)");
     return 0;
 }

@@ -299,10 +299,13 @@ void printValue(Value v) {
             printf("()");
             break;
         case Lambda:
-            printf("(lambda ");
-            printValue(head(v));
-            printf(" ");
-            printValue(tail(v));
+            printf("(");
+            printValue(v.data.closure->symbol);
+            printf(" => ");
+            printValue(v.data.closure->body);
+            printf(" in ");
+            printValue(v.data.closure->env);
+            printf(")");
             break;
         case Truth:
             printf("t");
