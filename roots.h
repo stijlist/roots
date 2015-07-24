@@ -46,7 +46,7 @@ typedef struct _parseresult {
     Value value;
 } ParseResult;
 
-bool is_empty(Value v);
+bool empty(Value v);
 Value car(Value arg);
 Value eval_empty(Value arg);
 Value eval(Value arg, Value env);

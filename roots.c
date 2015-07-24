@@ -56,12 +56,12 @@ Value tail(Value v) {
 }
 
 // nils and dotted pairs of nils are interchangeable for nil-punning
-bool is_empty(Value v) {
+bool empty(Value v) {
     return v.tag == Nil || (v.tag == ConsCell && head(v).tag == Nil && tail(v).tag == Nil);
 }
 
 bool is_true(Value v) {
-    return !is_empty(v);
+    return !empty(v);
 }
 
 bool streq(char *str1, char *str2) {
@@ -76,7 +76,7 @@ bool symeq(Value sym, char *str) {
 }
 
 Value atom(Value arg) {
-    if (is_empty(arg) || arg.tag == Nil || arg.tag == Symbol)
+    if (empty(arg) || arg.tag == Nil || arg.tag == Symbol)
         return truth();
     else
         return nil();
@@ -87,7 +87,7 @@ Value eq(Value arg1, Value arg2) {
         if (arg1.tag == Symbol && 
             streq(arg1.data.symbol, arg2.data.symbol)) {
             return truth();
-        } else if (arg1.tag == ConsCell && is_empty(arg1) && is_empty(arg2)) {
+        } else if (arg1.tag == ConsCell && empty(arg1) && empty(arg2)) {
             return truth();
         } else if (arg1.tag == Number) {
             return (arg1.data.number == arg2.data.number) ? truth() : nil();
@@ -97,7 +97,7 @@ Value eq(Value arg1, Value arg2) {
 }
 
 Value lookup(Value symbol, Value table) {
-    if(!is_empty(table)) {
+    if(!empty(table)) {
         if (is_true(eq(head(head(table)), symbol))) {
             return tail(head(table));
         } else {
@@ -112,7 +112,7 @@ Value lookup(Value symbol, Value table) {
 }
 
 Value let(Value symbol, Value binding, Value table) {
-    if (!is_empty(table)) {
+    if (!empty(table)) {
         if (is_true(eq(head(head(table)), symbol))) {
             return cons(cons(symbol, binding), tail(table));
         } else {
@@ -124,7 +124,7 @@ Value let(Value symbol, Value binding, Value table) {
 }
 
 Value merge(Value base, Value overlay) {
-    if (is_empty(overlay)) {
+    if (empty(overlay)) {
         return base;
     } else {
         Value overlay_pair = head(overlay);
