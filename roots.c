@@ -123,7 +123,17 @@ Value let(Value symbol, Value binding, Value table) {
     }
 }
 
-Value merge(Value base, Value overlay) {}
+Value merge(Value base, Value overlay) {
+    if (is_empty(overlay)) {
+        return base;
+    } else {
+        Value overlay_pair = head(overlay);
+        Value new_base = let(head(overlay_pair), tail(overlay_pair), base);
+        Value overlay_tail = tail(overlay);
+        return merge(new_base, overlay_tail);
+    }
+}
+
 
 Value make_closure(Value symbol, Value body, Value env) {
     Closure* closure = malloc(sizeof(Closure));
@@ -137,9 +147,11 @@ Value lambda(Value symbol, Value body, Value env) {
     return make_closure(symbol, body, env);
 }
 
-Value apply(Value closure, Value arg, Value env) {
-    Value new_env = let(closure->symbol, arg, merge(env, closure->env));
-    return eval(closure->body, new_env);
+Value apply(Value lambda, Value arg, Value env) {
+    Value new_env = let(lambda.data.closure->symbol, 
+                        arg, 
+                        merge(env, lambda.data.closure->env));
+    return eval(lambda.data.closure->body, new_env);
 }
 
 Value cond(Value condition, Value consequent, Value alternate, Value env) {
