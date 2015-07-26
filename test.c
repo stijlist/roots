@@ -1,10 +1,9 @@
 #include "roots.h"
 
 void read_eval_print(char *list) {
-    printf("%s\n", list); 
-    printf("=> ");
-    printValue(eval_empty(read(list)));
-    printf("\n");
+    printf("input: %s\n", list); 
+    Value v = eval_empty(read(list));
+    annotate(v, "=> ");
 }
 
 int main() {
@@ -48,5 +47,6 @@ int main() {
     
     read_eval_print("(let (f (lambda x x)) (f 1))");
     read_eval_print("(lambda x x)");
+    read_eval_print("(lambda x (lambda y x) 1)");
     return 0;
 }

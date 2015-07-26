@@ -285,6 +285,7 @@ Value read(char* string) {
     return parse(string).value;
 }
 
+void annotate(Value v, char* annotation) { printf(annotation); printValue(v); printf("\n"); }
 void printValue(Value v) {
     switch (v.tag) {
         case Number:
