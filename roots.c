@@ -260,6 +260,9 @@ ParseResult parsenum(char *cursor) {
 ParseResult parselist(char *cursor) {
     if (is_close_paren(*cursor)) {
         return (ParseResult) { ++cursor, nil() };
+    } else if (*cursor == '\0') {
+        printf("Unterminated '(', stopping parse.");
+        return (ParseResult) { cursor, nil() };
     } else { 
         ParseResult result = parse(cursor);
         ParseResult remaining = parselist(result.newcursor);
