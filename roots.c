@@ -62,10 +62,11 @@ bool is_true(Value v) {
 }
 
 bool streq(char *str1, char *str2) {
-    for (int i=0; (str1[i] != '\0' && str2[i] != '\0'); i++)
+    int i = 0;
+    for (; (str1[i] != '\0' && str2[i] != '\0'); i++)
         if (str1[i] != str2[i]) return false;
 
-    return true;
+    return str1[i] == str2[i]; // check that the last char is equal in case one terminated early
 }
 
 bool symeq(Value sym, char *str) {
