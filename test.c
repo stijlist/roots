@@ -50,5 +50,7 @@ int main() {
     read_eval_print("((lambda x (lambda y x)) 1)");
     read_eval_print("(((lambda x (lambda y x)) 1) 2)");
     read_eval_print("(let (f (lambda x (lambda y (cons x y)))) ((f 1) 2))");
+
+    read_eval_print("(let (f (lambda x (if (eq x 0) (f 1) x))) (f 0))");
     return 0;
 }
