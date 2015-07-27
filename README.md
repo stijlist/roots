@@ -1,5 +1,26 @@
-This is a toy lisp implementation that will be used to build towards a logic
-programming and functional programming system. I want to test how well I
-understand the mechanical implications of my chosen programming paradigms. I'd
-like to attempt to test the correctness of my programs using a quickcheck-style
-generative tester.
+This is a toy lisp implementation loosely based on Paul Graham's [The Roots of Lisp](http://ep.yimg.com/ty/cdn/paulgraham/jmc.ps) (postscript file).
+
+Working:
+
+- car (head)
+- cdr (tail)
+- cons
+- if
+- quote
+- atom
+- eq
+- let
+- lambda
+  - recursion
+  - lexical scope
+  - closures
+
+TODO (in rough dependency order):
+
+- arithmetic
+- define
+- macro
+- fn (more than 1 arg)
+- cond
+- proper error handling / program termination
+- garbage collection
