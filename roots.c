@@ -80,15 +80,19 @@ Value atom(Value arg) {
         return nil();
 }
 
-Value eq(Value arg1, Value arg2) {
-    if (arg1.tag == arg2.tag) {
-        if (arg1.tag == Symbol && 
-            streq(arg1.data.symbol, arg2.data.symbol)) {
+Value eq(Value a, Value b) {
+    if (a.tag == b.tag) {
+        if (a.tag == Symbol && 
+            streq(a.data.symbol, b.data.symbol)) {
             return truth();
-        } else if (arg1.tag == ConsCell && empty(arg1) && empty(arg2)) {
+        } else if (a.tag == ConsCell && empty(a) && empty(b)) {
             return truth();
-        } else if (arg1.tag == Number) {
-            return (arg1.data.number == arg2.data.number) ? truth() : nil();
+        } else if (a.tag == Number) {
+            return (a.data.number == b.data.number) ? truth() : nil();
+        } else if (a.tag == ConsCell && !empty(a) && !empty(b)) {
+            bool heads_eq = is_true(eq(head(a), head(b)));
+            bool tails_eq = is_true(eq(tail(a), tail(b)));
+            return (heads_eq && tails_eq) ? truth() : nil();
         }
     }
     return nil();

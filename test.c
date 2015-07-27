@@ -6,10 +6,21 @@ void read_eval_print(char *list) {
     annotate(v, "=> ");
 }
 
+void assert_equal(char *actual_str, char *expected_str) {
+      Value actual = eval_empty(read(actual_str));
+      Value expected = read(expected_str);
+      if (is_true(eq(actual, expected))) {
+          printf("ok: %s\n", actual_str);
+      } else {
+          annotate(expected, "not ok: expected: ");
+          annotate(actual, "actual: ");
+      }
+}
+
 int main() {
     printf("Hello world.\n\n");
 
-    read_eval_print("(cons 1 2)");
+    assert_equal("(cons 1 2)", "(1 2)");
     read_eval_print("(cons 1 (quote (2 3)))");
     read_eval_print("(cons (quote (1 2)) 3)");
     read_eval_print("(head (quote (1 2)))");
@@ -53,5 +64,6 @@ int main() {
 
     read_eval_print("(let (f (lambda x (if (eq x 0) (f 1) x))) (f 0))");
     // (let (nth (lambda list (lambda n (if (eq n 0) (head list) ((nth (tail list)) (minus n 1)))))))
+    read_eval_print("(eq (quote (t)) (quote (t)))");
     return 0;
 }

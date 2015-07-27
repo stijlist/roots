@@ -53,3 +53,5 @@ Value read(char *string);
 void annotate(Value l, char* annotation); 
 void printList(Value l); 
 void printValue(Value v);
+Value eq(Value arg1, Value arg2);
+bool is_true(Value v);
