@@ -9,7 +9,7 @@ char* get_line() {
 void repl() {
     char* input;
     while ((input = get_line()) != NULL) { 
-      printValue(eval_empty(read(input)));
+      print(eval(read(input), nil()));
       printf("\n");
     } 
 }
