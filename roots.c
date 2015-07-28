@@ -85,10 +85,7 @@ Value minus(Value a, Value b) {
 }
 
 Value atom(Value arg) {
-    if (empty(arg) || arg.tag == Nil || arg.tag == Symbol)
-        return truth();
-    else
-        return nil();
+    return (empty(arg) || arg.tag == Symbol) ? truth() : nil();
 }
 
 Value eq(Value a, Value b) {
