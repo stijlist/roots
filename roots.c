@@ -96,7 +96,7 @@ Value eq(Value a, Value b) {
         if (a.tag == Symbol && 
             streq(a.data.symbol, b.data.symbol)) {
             return truth();
-        } else if (a.tag == ConsCell && empty(a) && empty(b)) {
+        } else if (empty(a) && empty(b)) {
             return truth();
         } else if (a.tag == Number) {
             return (a.data.number == b.data.number) ? truth() : nil();
