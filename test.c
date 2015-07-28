@@ -3,7 +3,7 @@
 void test(char *input, char *expected_str) {
       Value actual = eval(read(input), nil());
       Value expected = read(expected_str);
-      if (is_true(eq(actual, expected))) {
+      if (!empty(eq(actual, expected))) {
           printf("ok: %s\n", input);
       } else {
           annotate(expected, "not ok, expected: ");
