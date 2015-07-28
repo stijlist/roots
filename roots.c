@@ -188,10 +188,8 @@ Value eval(Value arg, Value env) {
 
         // if the operator is a list, try and reduce it to an atom
         if (operator.tag == ConsCell) {
-          operator = eval(operator, env);
-        }
-
-        if (symeq(operator, "quote")) {
+            return eval(cons(eval(operator, env), operands), env);
+        } else if (symeq(operator, "quote")) {
             return first(operands);
         } else if (symeq(operator, "atom")) {
             return atom(eval(first(operands), env));
