@@ -182,11 +182,8 @@ Value third(Value list) { return head(tail(tail(list))); }
 // all builtins are fixed-arity; we can implement variable arity as macros
 Value eval(Value arg, Value env) {
     if (arg.tag == ConsCell) {
-        Value operator = head(arg);
-        Value operands = tail(arg);
-        Value fn;
+        Value operator = head(arg), operands = tail(arg), fn;
 
-        // if the operator is a list, try and reduce it to an atom
         if (operator.tag == ConsCell) {
             return eval(cons(eval(operator, env), operands), env);
         } else if (symeq(operator, "quote")) {
