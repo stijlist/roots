@@ -144,16 +144,12 @@ Value merge(Value base, Value overlay) {
 }
 
 
-Value make_closure(Value symbol, Value body, Value env) {
+Value lambda(Value symbol, Value body, Value env) {
     Closure* closure = malloc(sizeof(Closure));
     closure->symbol = symbol;
     closure->body = body;
     closure->env = env;
     return (Value) { (Data) closure, Lambda };
-}
-
-Value lambda(Value symbol, Value body, Value env) {
-    return make_closure(symbol, body, env);
 }
 
 Value apply(Value lambda, Value arg, Value env) {
@@ -165,10 +161,6 @@ Value apply(Value lambda, Value arg, Value env) {
 
 Value cond(Value condition, Value consequent, Value alternate, Value env) {
     return is_true(eval(condition, env)) ? eval(consequent, env) : eval(alternate, env);
-}
-
-Value eval_empty(Value arg) {
-    return eval(arg, cons(nil(), nil()));
 }
 
 Value first(Value list) { return head(list); }

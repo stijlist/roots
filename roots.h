@@ -41,7 +41,6 @@ struct _closure {
     Value env;
 };
 
-Value eval_empty(Value arg);
 Value eval(Value arg, Value env);
 Value read(char *string);
 void annotate(Value l, char* annotation); 
