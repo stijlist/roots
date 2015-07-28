@@ -51,8 +51,7 @@ Value eval(Value arg, Value env);
 ParseResult parse(char *cursor);
 Value read(char *string);
 void annotate(Value l, char* annotation); 
-void printList(Value l); 
-void printValue(Value v);
+void print(Value v);
 
 // builtins; probably should move to different header
 Value symbol(char *buf);

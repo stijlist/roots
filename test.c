@@ -12,7 +12,7 @@ void assert_equal(char *actual_str, char *expected_str) {
       if (is_true(eq(actual, expected))) {
           printf("ok: %s\n", actual_str);
       } else {
-          annotate(expected, "not ok: expected: ");
+          annotate(expected, "not ok, expected: ");
           annotate(actual, "actual: ");
       }
 }
@@ -20,7 +20,9 @@ void assert_equal(char *actual_str, char *expected_str) {
 int main() {
     printf("Hello world.\n\n");
 
+    assert_equal("()", "()");
     // assert_equal("(cons 1 2)", "(1 2)");
+    assert_equal("(quote (1 2))", "(1 2)");
     read_eval_print("(cons 1 (quote (2 3)))");
     read_eval_print("(cons (quote (1 2)) 3)");
     read_eval_print("(head (quote (1 2)))");
@@ -31,6 +33,7 @@ int main() {
     read_eval_print("(eq 1 1)");
     read_eval_print("(eq (head (quote (1))) 1)");
     read_eval_print("(eq (quote (1 2)) (quote (1 2)))");
+    read_eval_print("(eq (cons 1 2) (cons 1 2))");
 
     read_eval_print("(head (quote (foo bar)))");
 

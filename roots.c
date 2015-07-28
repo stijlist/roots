@@ -119,7 +119,7 @@ Value lookup(Value symbol, Value table) {
     }
           
     printf("Failed to find symbol ");
-    printValue(symbol);
+    print(symbol);
     printf("\n");
     return nil();
 }
@@ -211,7 +211,7 @@ Value eval(Value arg, Value env) {
         } else if ((fn = lookup(operator, env)).tag == Lambda){
             return apply(fn, first(operands), env);
         } else {
-            printValue(operator);
+            print(operator);
             printf(" is not a function.\n");
         }
     } else {
@@ -299,43 +299,37 @@ Value read(char* string) {
     return parse(string).value;
 }
 
-void annotate(Value v, char* annotation) { printf(annotation); printValue(v); printf("\n"); }
-void printValue(Value v) {
-    switch (v.tag) {
+void annotate(Value v, char* annotation) { printf(annotation); print(v); printf("\n"); }
+void print(Value current) {
+    switch (current.tag) {
         case Number:
-            printf("%d", v.data.number);
+            printf("%d", current.data.number);
             break;
         case Symbol:
-            printf("%s", v.data.symbol);
+            printf("%s", current.data.symbol);
             break;
         case ConsCell:
-            printList(v);
+            printf("(");
+            print(head(current));
+            printf(" . ");
+            print(tail(current));
+            printf(")");
             break;
         case Nil:
             printf("()");
             break;
         case Lambda:
             printf("(");
-            printValue(v.data.closure->symbol);
+            print(current.data.closure->symbol);
             printf(" => ");
-            printValue(v.data.closure->body);
+            print(current.data.closure->body);
             printf(" in ");
-            printValue(v.data.closure->env);
+            print(current.data.closure->env);
             printf(")");
             break;
         case Truth:
             printf("t");
+            break;
     }
-}
-
-void printList(Value l) {
-    printf("(");
-    while(l.tag == ConsCell) {
-      printValue(head(l));
-      l = tail(l);
-      if (l.tag != Nil) printf(" ");
-    }
-    if (l.tag != Nil) printValue(l);
-    printf(")");
 }
 #endif
