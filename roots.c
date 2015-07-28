@@ -90,13 +90,14 @@ Value atom(Value arg) {
 
 Value eq(Value a, Value b) {
     if (a.tag == b.tag) {
-        if (a.tag == Symbol && 
-            streq(a.data.symbol, b.data.symbol)) {
+        if (a.tag == Truth) {
             return truth();
         } else if (empty(a) && empty(b)) {
             return truth();
         } else if (a.tag == Number) {
             return (a.data.number == b.data.number) ? truth() : nil();
+        } else if (a.tag == Symbol && streq(a.data.symbol, b.data.symbol)) {
+            return truth();
         } else if (a.tag == ConsCell && !empty(a) && !empty(b)) {
             bool heads_eq = is_true(eq(head(a), head(b)));
             bool tails_eq = is_true(eq(tail(a), tail(b)));
