@@ -41,14 +41,8 @@ struct _closure {
     Value env;
 };
 
-typedef struct _parseresult {
-    char *newcursor;
-    Value value;
-} ParseResult;
-
 Value eval_empty(Value arg);
 Value eval(Value arg, Value env);
-ParseResult parse(char *cursor);
 Value read(char *string);
 void annotate(Value l, char* annotation); 
 void print(Value v);

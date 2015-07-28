@@ -219,6 +219,13 @@ Value eval(Value arg, Value env) {
     return nil();
 }
 
+typedef struct _parseresult {
+    char *newcursor;
+    Value value;
+} ParseResult;
+
+ParseResult parse(char *cursor);
+
 bool is_open_paren(char c) {
     return c == 40;
 }
