@@ -115,9 +115,7 @@ Value lookup(Value symbol, Value table) {
         }
     }
           
-    printf("Failed to find symbol ");
-    print(symbol);
-    printf("\n");
+    annotate(symbol, "Failed to find symbol ");
     return nil();
 }
 
@@ -208,8 +206,7 @@ Value eval(Value arg, Value env) {
         } else if ((fn = lookup(operator, env)).tag == Lambda){
             return apply(fn, first(operands), env);
         } else {
-            print(operator);
-            printf(" is not a function.\n");
+            annotate(operator, "Not a function: ");
         }
     } else {
         if (arg.tag == Symbol) {
@@ -296,7 +293,6 @@ Value read(char* string) {
     return parse(string).value;
 }
 
-void annotate(Value v, char* annotation) { printf(annotation); print(v); printf("\n"); }
 void print(Value current) {
     switch (current.tag) {
         case Number:
@@ -328,5 +324,11 @@ void print(Value current) {
             printf("t");
             break;
     }
+}
+
+void annotate(Value v, char* annotation) { 
+    printf(annotation);
+    print(v);
+    printf("\n");
 }
 #endif
