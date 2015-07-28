@@ -38,21 +38,20 @@ Value head(Value v) {
     if (v.tag == ConsCell) {
         return v.data.list->head;
     } else {
-        printf("Error, calling head on a non-list value.\n");
+        annotate(v, "Error, calling head on a non-list value: ");
         return nil();
     }
 }
     
 Value tail(Value v) {
-    if (v.tag == ConsCell)
+    if (v.tag == ConsCell) {
         return v.data.list->tail;
-    else
-        printf("Error, calling tail on a non-list value.\n");
-
-    return nil();
+    } else {
+        annotate(v, "Error, calling tail on a non-list value: ");
+        return nil();
+    }
 }
 
-// nils and dotted pairs of nils are interchangeable for nil-punning
 bool empty(Value v) {
     return v.tag == Nil || (v.tag == ConsCell && head(v).tag == Nil && tail(v).tag == Nil);
 }
@@ -71,6 +70,18 @@ bool streq(char *str1, char *str2) {
 
 bool symeq(Value sym, char *str) {
     return sym.tag == Symbol && streq(sym.data.symbol, str);
+}
+
+Value plus(Value a, Value b) {
+    bool numeric_args = (a.tag == Number && b.tag == Number);
+    if (!numeric_args) annotate(cons(a, b), "Tried to perform addition on non-numeric pair: ");
+    return numeric_args ? number(a.data.number + b.data.number) : nil();
+}
+
+Value minus(Value a, Value b) {
+    bool numeric_args = (a.tag == Number && b.tag == Number);
+    if (!numeric_args) annotate(cons(a, b), "Tried to perform subtraction on non-numeric pair: ");
+    return (a.tag == Number && b.tag == Number) ? number(a.data.number + b.data.number) : nil();
 }
 
 Value atom(Value arg) {

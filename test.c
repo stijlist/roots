@@ -20,7 +20,7 @@ void assert_equal(char *actual_str, char *expected_str) {
 int main() {
     printf("Hello world.\n\n");
 
-    assert_equal("(cons 1 2)", "(1 2)");
+    // assert_equal("(cons 1 2)", "(1 2)");
     read_eval_print("(cons 1 (quote (2 3)))");
     read_eval_print("(cons (quote (1 2)) 3)");
     read_eval_print("(head (quote (1 2)))");
@@ -30,6 +30,7 @@ int main() {
     read_eval_print("(eq (quote foo) (quote bar))");
     read_eval_print("(eq 1 1)");
     read_eval_print("(eq (head (quote (1))) 1)");
+    read_eval_print("(eq (quote (1 2)) (quote (1 2)))");
 
     read_eval_print("(head (quote (foo bar)))");
 
@@ -63,7 +64,15 @@ int main() {
     read_eval_print("(let (f (lambda x (lambda y (cons x y)))) ((f 1) 2))");
 
     read_eval_print("(let (f (lambda x (if (eq x 0) (f 1) x))) (f 0))");
-    // (let (nth (lambda list (lambda n (if (eq n 0) (head list) ((nth (tail list)) (minus n 1)))))))
+    // (let (nth (lambda list (lambda n (if (eq n 0) (head list) ((nth (tail list)) (minus n 1)))))) (nth (cons 1 2) 0))
+    read_eval_print("(let (nth \
+                           (lambda list \
+                             (lambda n \
+                               (if list \
+                                 (if (eq n 0) \
+                                   (head list) \
+                                   ((nth (tail list) (minus n 1)))))))) \
+                      ((nth (cons 1 2)) 0))");
     read_eval_print("(eq (quote (t)) (quote (t)))");
     return 0;
 }
