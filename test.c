@@ -61,6 +61,6 @@ int main() {
     test("(((lambda x (lambda y x)) 1) 2)", "1");
     test("(let (f (lambda x (lambda y (cons x (cons y ()))))) ((f 1) 2))", "(1 2)");
 
-    test("(let (f (lambda x (if (eq x 0) (f 1) x))) (f 0))", "2");
+    test("(let (f (lambda x (if (eq x 0) (f 1) x))) (f 0))", "1");
     return 0;
 }
