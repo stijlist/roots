@@ -43,6 +43,7 @@ struct _closure {
 
 Value read(char *string);
 Value eval(Value arg, Value env);
+Value eval_mutating_env(Value arg, Value* env);
 void print(Value v);
 void annotate(Value l, char* annotation); 
 

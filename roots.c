@@ -212,6 +212,17 @@ Value eval(Value arg, Value env) {
     return nil();
 }
 
+Value eval_mutating_env(Value arg, Value* env) {
+    if (arg.tag == ConsCell && symeq(head(arg), "define")) {
+        Value operands = tail(arg);
+        Value binding = eval(second(operands), *env);
+        *env = let(first(operands), binding, *env);
+        return binding;
+    } else {
+        return eval(arg, *env);
+    }
+}
+
 typedef struct _parseresult {
     char *newcursor;
     Value value;
