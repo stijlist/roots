@@ -14,6 +14,7 @@ Working:
   - recursion
   - lexical scope
   - closures
+- define (only works in repl)
 
 TODO (in rough dependency order):
 
