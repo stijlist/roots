@@ -14,12 +14,15 @@ Working:
   - recursion
   - lexical scope
   - closures
-- define (only works in repl)
+- define (for repl only)
+- arithmetic
+  - plus
+  - minus
 
 TODO (in rough dependency order):
-
 - arithmetic
-- define
+  - multiply
+  - divide
 - macro
 - fn (more than 1 arg)
 - cond
