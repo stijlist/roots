@@ -190,6 +190,10 @@ Value eval(Value arg, Value env) {
             return cond(first(operands), second(operands), third(operands), env);
         } else if (symeq(operator, "lambda")) {
             return lambda(first(operands), second(operands), env);
+        } else if (symeq(operator, "plus")) {
+            return plus(eval(first(operands), env), eval(second(operands), env));
+        } else if (symeq(operator, "minus")) {
+            return minus(eval(first(operands), env), eval(second(operands), env));
         } else if (symeq(operator, "let")) {
             Value bindings = first(operands);
             Value new_env = let(first(bindings), eval(second(bindings), env), env);
