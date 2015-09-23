@@ -308,23 +308,19 @@ Value read(char* string) {
     return parse(string).value;
 }
 
-void print_no_parens_if_list_or_nil(Value current) {
-    if (current.tag == ConsCell) {
-        if (tail(current).tag == Nil) {
-            print(head(current));
-        } else if (tail(current).tag == ConsCell) {
-            print(head(current));
-            printf(" ");
-            print_no_parens_if_list_or_nil(tail(current));
-        } else {
-            printf("(");
-            print(head(current));
-            printf(" . ");
-            print(tail(current));
-            printf(")");
-        }
-    } else {
-        print(current);
+void print_list_contents(Value list) {
+    if (tail(list).tag == Nil) {
+        print(head(list));
+    } else if (tail(list).tag == ConsCell) {
+        print(head(list));
+        printf(" ");
+        print_list_contents(tail(list));
+    } else { // dotted
+        printf("(");
+        print(head(list));
+        printf(" . ");
+        print(tail(list));
+        printf(")");
     }
 }
 
@@ -343,7 +339,7 @@ void print(Value current) {
                 printf(")");
             } else if (tail(current).tag == ConsCell) {
                 printf(" ");
-                print_no_parens_if_list_or_nil(tail(current));
+                print_list_contents(tail(current)); // no parens
                 printf(")");
             } else { // dotted
                 printf(" . ");
