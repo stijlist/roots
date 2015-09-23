@@ -308,6 +308,26 @@ Value read(char* string) {
     return parse(string).value;
 }
 
+void print_no_parens_if_list_or_nil(Value current) {
+    if (current.tag == ConsCell) {
+        if (tail(current).tag == Nil) {
+            print(head(current));
+        } else if (tail(current).tag == ConsCell) {
+            print(head(current));
+            printf(" ");
+            print_no_parens_if_list_or_nil(tail(current));
+        } else {
+            printf("(");
+            print(head(current));
+            printf(" . ");
+            print(tail(current));
+            printf(")");
+        }
+    } else {
+        print(current);
+    }
+}
+
 void print(Value current) {
     switch (current.tag) {
         case Number:
@@ -323,7 +343,7 @@ void print(Value current) {
                 printf(")");
             } else if (tail(current).tag == ConsCell) {
                 printf(" ");
-                print(tail(current)); // need to print cons cells without parens in this case
+                print_no_parens_if_list_or_nil(tail(current));
                 printf(")");
             } else { // dotted
                 printf(" . ");
