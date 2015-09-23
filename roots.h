@@ -2,17 +2,17 @@
 #include <stdio.h>
 
 typedef enum {
-    false,
-    true,
+  false,
+  true,
 } bool;
 
 typedef enum {
-    Number,
-    Symbol,
-    ConsCell,
-    Lambda,
-    Nil,
-    Truth
+  Number,
+  Symbol,
+  ConsCell,
+  Lambda,
+  Nil,
+  Truth
 } TypeTag;
 
 typedef struct _value Value;
@@ -21,24 +21,24 @@ typedef struct _cons Cons;
 typedef union _data Data;
 
 struct _value {
-    union _data {
-        int number;
-        Cons *list;
-        char *symbol;
-        Closure *closure;
-    } data;
-    TypeTag tag;
+  union _data {
+    int number;
+    Cons *list;
+    char *symbol;
+    Closure *closure;
+  } data;
+  TypeTag tag;
 };
 
 struct _cons {
-    Value head;
-    Value tail;
+  Value head;
+  Value tail;
 };
 
 struct _closure {
-    Value symbol;
-    Value body;
-    Value env;
+  Value symbol;
+  Value body;
+  Value env;
 };
 
 Value read(char *string);
