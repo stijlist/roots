@@ -21,7 +21,6 @@ Working:
   - multiply
   - divide
 - non-alphabetical symbols
-- 4 space -> 2 space formatting
 
 TODO (in rough dependency order):
 - macro
