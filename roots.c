@@ -72,16 +72,35 @@ bool symeq(Value sym, char *str) {
     return sym.tag == Symbol && streq(sym.data.symbol, str);
 }
 
-Value plus(Value a, Value b) {
-    bool numeric_args = (a.tag == Number && b.tag == Number);
-    if (!numeric_args) annotate(cons(a, b), "Tried to perform addition on non-numeric pair: ");
-    return numeric_args ? number(a.data.number + b.data.number) : nil();
+bool ensure_numeric_op(Value a, Value b, char *op) {
+    if (a.tag != Number || b.tag != Number) {
+        printf("Tried to perform %s on non-numeric pair: ", op);
+        print(cons(a, b));
+        printf("\n");
+        return false;
+    } else {
+        return true;
+    }
 }
 
-Value minus(Value a, Value b) {
-    bool numeric_args = (a.tag == Number && b.tag == Number);
-    if (!numeric_args) annotate(cons(a, b), "Tried to perform subtraction on non-numeric pair: ");
-    return (a.tag == Number && b.tag == Number) ? number(a.data.number + b.data.number) : nil();
+Value add(Value a, Value b) {
+    return ensure_numeric_op(a, b, "addition") ? 
+        number(a.data.number + b.data.number) : nil();
+}
+
+Value subtract(Value a, Value b) {
+    return ensure_numeric_op(a, b, "subtraction") ? 
+        number(a.data.number - b.data.number) : nil();
+}
+
+Value multiply(Value a, Value b) {
+    return ensure_numeric_op(a, b, "multiplication") ? 
+        number(a.data.number * b.data.number) : nil();
+}
+
+Value divide(Value a, Value b) {
+    return ensure_numeric_op(a, b, "division") ? 
+        number(a.data.number / b.data.number) : nil();
 }
 
 Value atom(Value arg) {
@@ -190,10 +209,14 @@ Value eval(Value arg, Value env) {
             return cond(first(operands), second(operands), third(operands), env);
         } else if (symeq(operator, "lambda")) {
             return lambda(first(operands), second(operands), env);
-        } else if (symeq(operator, "plus")) {
-            return plus(eval(first(operands), env), eval(second(operands), env));
-        } else if (symeq(operator, "minus")) {
-            return minus(eval(first(operands), env), eval(second(operands), env));
+        } else if (symeq(operator, "add")) {
+            return add(eval(first(operands), env), eval(second(operands), env));
+        } else if (symeq(operator, "subtract")) {
+            return subtract(eval(first(operands), env), eval(second(operands), env));
+        } else if (symeq(operator, "multiply")) {
+            return multiply(eval(first(operands), env), eval(second(operands), env));
+        } else if (symeq(operator, "divide")) {
+            return divide(eval(first(operands), env), eval(second(operands), env));
         } else if (symeq(operator, "let")) {
             Value bindings = first(operands);
             Value new_env = let(first(bindings), eval(second(bindings), env), env);
