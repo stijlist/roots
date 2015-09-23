@@ -209,13 +209,13 @@ Value eval(Value arg, Value env) {
             return cond(first(operands), second(operands), third(operands), env);
         } else if (symeq(operator, "lambda")) {
             return lambda(first(operands), second(operands), env);
-        } else if (symeq(operator, "add")) {
+        } else if (symeq(operator, "+")) {
             return add(eval(first(operands), env), eval(second(operands), env));
-        } else if (symeq(operator, "subtract")) {
+        } else if (symeq(operator, "-")) {
             return subtract(eval(first(operands), env), eval(second(operands), env));
-        } else if (symeq(operator, "multiply")) {
+        } else if (symeq(operator, "*")) {
             return multiply(eval(first(operands), env), eval(second(operands), env));
-        } else if (symeq(operator, "divide")) {
+        } else if (symeq(operator, "/")) {
             return divide(eval(first(operands), env), eval(second(operands), env));
         } else if (symeq(operator, "let")) {
             Value bindings = first(operands);
@@ -273,9 +273,21 @@ bool is_num(char c) {
     return (c >= 48 && c <= 57);
 }
 
+bool is_sym(char c) {
+    return (c >= 33 && c <= 39) // !"#$%&'
+        || (c >= 42 && c <= 47) // *+,-./
+        || (c >= 58 && c <= 64) // :;0<=>?@
+        || (c >= 91 && c <= 96) // [\]^_`
+        || (c >= 123 && c <= 126); // {|}~
+}
+
+bool valid_symbol_char(char c) {
+    return is_alpha(c) || is_sym(c);
+}
+
 ParseResult parsesym(char *cursor) {
     char *symbuf = malloc(MAX_SYMBOL_SIZE * sizeof(char));
-    for (int i = 0; is_alpha(*cursor); cursor++, i++) 
+    for (int i = 0; valid_symbol_char(*cursor); cursor++, i++) 
         symbuf[i] = *cursor;
 
     Value value = streq(symbuf, "t") ? truth() : symbol(symbuf);
@@ -317,7 +329,7 @@ ParseResult parse(char *cursor) {
     cursor = next_value_at(cursor);
     if (is_open_paren(*cursor)) {
         return parselist(++cursor); // consume a paren
-    } else if (is_alpha(*cursor)) {
+    } else if (valid_symbol_char(*cursor)) {
         return parsesym(cursor);
     } else if (is_num(*cursor)) {
         return parsenum(cursor);

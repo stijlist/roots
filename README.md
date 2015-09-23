@@ -20,9 +20,9 @@ Working:
   - subtract
   - multiply
   - divide
+- non-alphabetical symbols
 
 TODO (in rough dependency order):
-- non-alphabetical symbols
 - 4 space -> 2 space formatting
 - macro
 - fn (more than 1 arg)
