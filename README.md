@@ -20,6 +20,7 @@ Working:
   - minus
 
 TODO (in rough dependency order):
+- better printing of dotted pairs
 - arithmetic
   - multiply
   - divide

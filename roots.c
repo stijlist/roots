@@ -319,9 +319,17 @@ void print(Value current) {
         case ConsCell:
             printf("(");
             print(head(current));
-            printf(" . ");
-            print(tail(current));
-            printf(")");
+            if (tail(current).tag == Nil) {
+                printf(")");
+            } else if (tail(current).tag == ConsCell) {
+                printf(" ");
+                print(tail(current)); // need to print cons cells without parens in this case
+                printf(")");
+            } else { // dotted
+                printf(" . ");
+                print(tail(current));
+                printf(")");
+            }
             break;
         case Nil:
             printf("()");
