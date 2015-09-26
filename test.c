@@ -56,11 +56,11 @@ int main() {
   test("((lambda x ((lambda x x) 2)) 1)", "2");
   
   test("(let (f (lambda x x)) (f 1))", "1");
-  // read_eval_print("(lambda x x)");
-  // read_eval_print("((lambda x (lambda y x)) 1)");
   test("(((lambda x (lambda y x)) 1) 2)", "1");
   test("(let (f (lambda x (lambda y (cons x (cons y ()))))) ((f 1) 2))", "(1 2)");
 
+  test("(let (f (lambda x x)) (f (cons 1 ())))", "(1)");
   test("(let (f (lambda x (if (eq x 0) (f 1) x))) (f 0))", "1");
+  test("(let (fib (lambda n (if (eq n 1) 1 (if (eq n 2) 1 (+ (fib (- n 1)) (fib (- n 2))))))) (fib 5))", "5");
   return 0;
 }

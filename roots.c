@@ -232,7 +232,7 @@ Value eval(Value arg, Value env) {
     } else if (operator.tag == Lambda) {
       return apply(operator, first(operands), env);
     } else if ((fn = lookup(operator, env)).tag == Lambda){
-      return apply(fn, first(operands), env);
+      return apply(fn, eval(first(operands), env), env);
     } else {
       annotate(operator, "Not a function: ");
     }
