@@ -186,6 +186,12 @@ Value first(Value list) { return head(list); }
 Value second(Value list) { return head(tail(list)); }
 Value third(Value list) { return head(tail(tail(list))); }
 
+Value inspect(Value v) {
+  print(v);
+  printf("\n");
+  return v;
+}
+
 // all builtins are fixed-arity; we can implement variable arity as macros
 Value eval(Value arg, Value env) {
   if (arg.tag == ConsCell) {
@@ -209,6 +215,8 @@ Value eval(Value arg, Value env) {
       return cond(first(operands), second(operands), third(operands), env);
     } else if (symeq(operator, "lambda")) {
       return lambda(first(operands), second(operands), env);
+    } else if (symeq(operator, "inspect")) {
+      return inspect(eval(first(operands), env));
     } else if (symeq(operator, "+")) {
       return add(eval(first(operands), env), eval(second(operands), env));
     } else if (symeq(operator, "-")) {
