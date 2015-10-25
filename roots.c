@@ -413,4 +413,41 @@ void annotate(Value v, char* annotation) {
   print(v);
   printf("\n");
 }
+
+/*
+What is a macro? 
+It's a procedure that takes an unevaluated program, transforms it, 
+and gives you back another unevaluated program.
+
+How can we implement this?
+It's a procedure - maybe we can set an is_macro flag, and check it
+when invoking a lambda, to see if we should eval the arguments.
+
+What would the decision procedure look like?
+if is_macro, don't call eval on the args - call the macro with the
+args, then call eval on the result.
+
+Would this work?
+What's a macro I could use to test this?
+(define fn 
+  (macro body 
+    (let (args (head (tail body)))
+      (if (list? args)
+        (if (empty? args) 
+          (quote (lambda _ body)) ; do I need special treatment of the underscore?
+          ; for each argument, enclose in a lambda
+          (let arg (head (args))
+            (cons (quote lambda) (cons arg body)))
+How is fn called?
+(fn (x y) (+ x y))
+args: (x y)
+body: (+ x y)
+desired result: (lambda x (lambda y (+ x y)))
+
+I'm not confident that fn will be invoked correctly in this case though -
+((lambda x (lambda y (+ x y))) 1 2)
+
+Yeah, it looks like we need multi-argument functions in the language itself.
+*/
+
 #endif
