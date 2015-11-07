@@ -23,9 +23,8 @@ Working:
 - non-alphabetical symbols
 
 TODO (in rough dependency order):
-- macro
-- fn (more than 1 arg)
-- real arithmetic
+- variadic functions
 - cond
+- bootstrap
 - proper error handling / program termination
 - garbage collection
