@@ -49,18 +49,21 @@ int main() {
   test("(let (x (quote (1 2))) x)", "(1 2)");
   test("(let (x 1) (let (y 2) (cons x (cons y ()))))", "(1 2)");
 
-  test("((lambda x x) 2)", "2");
-  test("((lambda x (cons x ())) 1)", "(1)");
+  test("((lambda (x) x) 2)", "2");
+  test("((lambda (x) (cons x ())) 1)", "(1)");
 
-  test("((lambda x ((lambda y (cons x (cons y ()))) 2)) 1)", "(1 2)");
-  test("((lambda x ((lambda x x) 2)) 1)", "2");
-  
-  test("(let (f (lambda x x)) (f 1))", "1");
-  test("(((lambda x (lambda y x)) 1) 2)", "1");
-  test("(let (f (lambda x (lambda y (cons x (cons y ()))))) ((f 1) 2))", "(1 2)");
+  test("((lambda (x y) (cons x (cons y ()))) 1 2)", "(1 2)");
+  test("(let (f (lambda (x y) (cons x (cons y ())))) (f 1 2))", "(1 2)");
+  test("(let (f (lambda (x y z) (cons x (cons y (cons z ()))))) (f 1 2 3))", "(1 2 3)");
 
-  test("(let (f (lambda x x)) (f (cons 1 ())))", "(1)");
-  test("(let (f (lambda x (if (eq x 0) (f 1) x))) (f 0))", "1");
-  test("(let (fib (lambda n (if (eq n 1) 1 (if (eq n 2) 1 (+ (fib (- n 1)) (fib (- n 2))))))) (fib 5))", "5");
+  test("((lambda (x) ((lambda (y) (cons x (cons y ()))) 2)) 1)", "(1 2)");
+  test("((lambda (x) ((lambda (x) x) 2)) 1)", "2");
+  test("(let (f (lambda (x) x)) (f 1))", "1");
+  test("(((lambda (x) (lambda (y) x)) 1) 2)", "1");
+  test("(let (f (lambda (x) (lambda (y) (cons x (cons y ()))))) ((f 1) 2))", "(1 2)");
+
+  test("(let (f (lambda (x) x)) (f (cons 1 ())))", "(1)");
+  test("(let (f (lambda (x) (if (eq x 0) (f 1) x))) (f 0))", "1");
+  test("(let (fib (lambda (n) (if (eq n 1) 1 (if (eq n 2) 1 (+ (fib (- n 1)) (fib (- n 2))))))) (fib 5))", "5");
   return 0;
 }

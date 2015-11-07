@@ -36,7 +36,7 @@ struct _cons {
 };
 
 struct _closure {
-  Value symbol;
+  Value bindings;
   Value body;
   Value env;
 };

@@ -162,20 +162,22 @@ Value merge(Value base, Value overlay) {
   }
 }
 
-
-Value lambda(Value symbol, Value body, Value env) {
+Value lambda(Value bindings, Value body, Value env) {
   Closure* closure = malloc(sizeof(Closure));
-  closure->symbol = symbol;
+  closure->bindings = bindings;
   closure->body = body;
   closure->env = env;
   return (Value) { (Data) closure, Lambda };
 }
 
-Value apply(Value lambda, Value arg, Value env) {
-  Value new_env = let(lambda.data.closure->symbol, 
-                      arg, 
-                      merge(env, lambda.data.closure->env));
-  return eval(lambda.data.closure->body, new_env);
+Value apply(Value lambda, Value args, Value env) {
+  Value bindings = lambda.data.closure->bindings, arg = args;
+  Value merged_env = merge(env, lambda.data.closure->env);
+  while(!empty(bindings) && !empty(arg)) {
+    merged_env = let(head(bindings), head(arg), merged_env);
+    bindings = tail(bindings), arg = tail(arg);
+  }
+  return eval(lambda.data.closure->body, merged_env);
 }
 
 Value cond(Value condition, Value consequent, Value alternate, Value env) {
@@ -192,7 +194,10 @@ Value inspect(Value v) {
   return v;
 }
 
-// all builtins are fixed-arity; we can implement variable arity as macros
+Value eval_all(Value args, Value env) {
+  return empty(args) ? nil() : cons(eval(head(args), env), eval_all(tail(args), env));
+}
+
 Value eval(Value arg, Value env) {
   if (arg.tag == ConsCell) {
     Value operator = head(arg), operands = tail(arg), fn;
@@ -230,9 +235,9 @@ Value eval(Value arg, Value env) {
       Value new_env = let(first(bindings), eval(second(bindings), env), env);
       return eval(second(operands), new_env);
     } else if (operator.tag == Lambda) {
-      return apply(operator, first(operands), env);
+      return apply(operator, operands, env);
     } else if ((fn = lookup(operator, env)).tag == Lambda){
-      return apply(fn, eval(first(operands), env), env);
+      return apply(fn, eval_all(operands, env), env);
     } else {
       annotate(operator, "Not a function: ");
     }
@@ -395,7 +400,7 @@ void print(Value current) {
       break;
     case Lambda:
       printf("(");
-      print(current.data.closure->symbol);
+      print(current.data.closure->bindings);
       printf(" => ");
       print(current.data.closure->body);
       printf(" in ");
