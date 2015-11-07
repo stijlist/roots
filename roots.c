@@ -438,20 +438,30 @@ What's a macro I could use to test this?
           ; for each argument, enclose in a lambda
           (let arg (head (args))
             (cons (quote lambda) (cons arg body)))
+
 How is fn called?
 (fn (x y) (+ x y))
 args: (x y)
 body: (+ x y)
-desired result: (lambda x (lambda y (+ x y)))
+desired result: (lambda args (+ (nth args 0) (nth args 1)))
 
-I'm not confident that fn will be invoked correctly in this case though -
-((lambda x (lambda y (+ x y))) 1 2)
+approach: every time you see a symbol, iterate through args until you find a match
+O(n*m) where n is argument list length and m is function body length - horrifying
+but hilarious and mnmlst
 
-Yeah, it looks like we need multi-argument functions in the language itself.
+(define fn
+  (macro unevaluated
+    (let (args (head unevaluated))
+      ; walk the body, replacing every symbol in the args with (nth args _)
+      (let (body (tail unevaluated))
+        (let (walk-and-replace (lambda body (if (contains args (head body))
 
-Oh, duh: 
+Screw this - I'm just gonna do it in the host language. 
 
-(lambda args (+ (first args) (second args)))
+The goal was macros -> variadic fns -> implement cond -> bootstrapped eval
+
+I can do this without the bollocks if I simply implement variadic functions cond in
+the host language and bootstrap from there.
 */
 
 #endif
