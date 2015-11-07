@@ -448,6 +448,10 @@ I'm not confident that fn will be invoked correctly in this case though -
 ((lambda x (lambda y (+ x y))) 1 2)
 
 Yeah, it looks like we need multi-argument functions in the language itself.
+
+Oh, duh: 
+
+(lambda args (+ (first args) (second args)))
 */
 
 #endif
