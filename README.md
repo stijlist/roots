@@ -21,10 +21,12 @@ Working:
   - multiply
   - divide
 - non-alphabetical symbols
+- variadic functions
 
 TODO (in rough dependency order):
-- variadic functions
+- repl works on multiline functions
 - cond
 - bootstrap
+- strings
 - proper error handling / program termination
 - garbage collection

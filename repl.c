@@ -9,8 +9,8 @@ char* get_line() {
 void repl() {
   char* input;
   Value env = nil();
-  while ((input = get_line()) != NULL) { 
-    print(eval_mutating_env(read(input), &env));
+  while ((input = get_line()) != NULL) {
+    print(eval_mutating_env(read(input), &env)); // read -> eval -> print -> loop
     printf("\n");
   } 
 }
