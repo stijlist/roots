@@ -1,14 +1,12 @@
 main:
-	cc -c roots.c utils.c repl.c
-	cc roots.o utils.o repl.o -o repl.out
+	cc roots.c repl.c -o roots
 
-test: main
-	cc -c test.c 
-	cc utils.o roots.o test.o -o test.out
+test:
+	cc roots.c test.c -o test.out
 	./test.out
 
 run: main
-	./repl.out
+	./roots
 
 debug:
 	cc -g -c test.c

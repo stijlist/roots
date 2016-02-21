@@ -1,4 +1,5 @@
 #include "roots.h"
+#include <stdio.h>
 
 void test_balanced() {
   printf("testing 'balanced' utility function:\n");

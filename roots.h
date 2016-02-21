@@ -1,4 +1,10 @@
-#include "utils.h"
+typedef enum {
+  false,
+  true,
+} bool;
+
+bool balanced(char* expr);
+char* get_line();
 
 typedef enum {
   Number,
@@ -40,6 +46,7 @@ Value eval(Value arg, Value env);
 Value eval_mutating_env(Value arg, Value* env);
 void print(Value v);
 void annotate(Value l, char* annotation); 
+void repl();
 
 Value nil();
 bool empty(Value v);
