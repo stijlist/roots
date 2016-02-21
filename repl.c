@@ -1,15 +1,12 @@
 #include "roots.h"
-#define INPUT_BUFFER_SIZE 120
-
-char* get_line() {
-  char* s = malloc(INPUT_BUFFER_SIZE * sizeof(char));
-  return fgets(s, INPUT_BUFFER_SIZE, stdin);
-}
 
 void repl() {
-  char* input;
+  char *input, *more;
   Value env = nil();
   while ((input = get_line()) != NULL) {
+    // while (unbalanced(input) && (more = get_line()) != NULL) {
+      // input = append(input, more);
+    // }
     print(eval_mutating_env(read(input), &env)); // read -> eval -> print -> loop
     printf("\n");
   } 

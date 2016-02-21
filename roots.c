@@ -414,7 +414,7 @@ void print(Value current) {
 }
 
 void annotate(Value v, char* annotation) { 
-  printf(annotation);
+  printf("%s", annotation);
   print(v);
   printf("\n");
 }

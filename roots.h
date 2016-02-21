@@ -1,10 +1,4 @@
-#include <stdlib.h>
-#include <stdio.h>
-
-typedef enum {
-  false,
-  true,
-} bool;
+#include "utils.h"
 
 typedef enum {
   Number,
