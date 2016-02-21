@@ -5,24 +5,14 @@ char* get_line() {
   return fgets(s, INPUT_BUFFER_SIZE, stdin);
 }
 
-bool unbalanced(char* expr) {
+bool balanced(char* expr) {
   char open_paren = 40, close_paren = 41;
 
   int parenlevel = 0;
-  for (char *c = expr; *c != NULL && *c != EOF; c++) {
+  for (char *c = expr; *c != '\0' && *c != EOF; c++) {
     if (*c == open_paren) parenlevel++;
     if (*c == close_paren) parenlevel--;
   }
 
   return parenlevel == 0;
-}
-
-char* append(char* original, char* additional) {
-  // char tmp[INPUT_BUFFER_SIZE];
-  // if (strlcat(original, additional, sizeof(tmp)) >= sizeof(tmp)) {
-    // // error case
-  // } else {
-    // 
-  // }
-  return "unimplemented";
 }

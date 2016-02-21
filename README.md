@@ -22,9 +22,9 @@ Working:
   - divide
 - non-alphabetical symbols
 - variadic functions
+- repl works on multiline functions
 
 TODO (in rough dependency order):
-- repl works on multiline functions
 - cond
 - bootstrap
 - strings

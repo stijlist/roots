@@ -1,9 +1,9 @@
 #include "roots.h"
 
-void test_unbalanced() {
-  printf("testing 'unbalanced' utility function:\n");
-  printf("\tshould be true: %s\n", unbalanced("()") ? "true" : "false");
-  printf("\tshould be false: %s\n", unbalanced("(") ? "true" : "false");
+void test_balanced() {
+  printf("testing 'balanced' utility function:\n");
+  printf("\tshould be true: %s\n", balanced("()") ? "true" : "false");
+  printf("\tshould be false: %s\n", balanced("(") ? "true" : "false");
 }
 
 void test(char *input, char *expected_str) {
@@ -21,7 +21,7 @@ void test(char *input, char *expected_str) {
 int main() {
   printf("Hello world.\n\n");
 
-  test_unbalanced();
+  test_balanced();
 
   test("()", "()");
   // don't have a way to read dotted pair literals yet
