@@ -30,3 +30,8 @@ TODO (in rough dependency order):
 - strings
 - proper error handling / program termination
 - garbage collection
+
+
+quirks:
+
+Side-effects in "if" or "cond" forms are undefined behavior.
