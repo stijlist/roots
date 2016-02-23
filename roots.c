@@ -185,7 +185,8 @@ Value apply(Value lambda, Value args, Value env) {
   return eval(lambda.data.closure->body, merged_env);
 }
 
-Value cond(Value condition, Value consequent, Value alternate, Value env) {
+Value ternary(Value condition, Value consequent, Value alternate, Value env) {
+  // TODO: eval_mutating_env in the condition?
   return is_true(eval(condition, env)) ? eval(consequent, env) : eval(alternate, env);
 }
 
@@ -201,6 +202,11 @@ Value inspect(Value v) {
 
 Value eval_all(Value args, Value env) {
   return empty(args) ? nil() : cons(eval(head(args), env), eval_all(tail(args), env));
+}
+
+Value cond(Value args, Value env) {
+  Value condition = first(head(args)), result = second(head(args));
+  return is_true(eval(condition, env)) ? eval(result, env) : cond(tail(args), env);
 }
 
 Value eval(Value arg, Value env) {
@@ -222,7 +228,9 @@ Value eval(Value arg, Value env) {
     } else if (symeq(operator, "cons")) {
       return cons(eval(first(operands), env), eval(second(operands), env));
     } else if (symeq(operator, "if")) {
-      return cond(first(operands), second(operands), third(operands), env);
+      return ternary(first(operands), second(operands), third(operands), env);
+    } else if (symeq(operator, "cond")) {
+      return cond(operands, env);
     } else if (symeq(operator, "lambda")) {
       return lambda(first(operands), second(operands), env);
     } else if (symeq(operator, "inspect")) {

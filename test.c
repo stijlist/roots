@@ -74,5 +74,8 @@ int main() {
   test("(let (f (lambda (x) x)) (f (cons 1 ())))", "(1)");
   test("(let (f (lambda (x) (if (eq x 0) (f 1) x))) (f 0))", "1");
   test("(let (fib (lambda (n) (if (eq n 1) 1 (if (eq n 2) 1 (+ (fib (- n 1)) (fib (- n 2))))))) (fib 5))", "5");
+
+  test("(cond (1 1) ((quote ()) 2))", "1");
+  test("(cond ((quote ()) 2) (1 1))", "1");
   return 0;
 }

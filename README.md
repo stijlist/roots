@@ -23,9 +23,9 @@ Working:
 - non-alphabetical symbols
 - variadic functions
 - repl works on multiline functions
+- cond
 
 TODO (in rough dependency order):
-- cond
 - bootstrap
 - strings
 - proper error handling / program termination
