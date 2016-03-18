@@ -44,7 +44,7 @@ Value head(Value v) {
     return v.data.list->head;
   } else {
     annotate(v, "Error, calling head on a non-list value: ");
-    return nil();
+    exit(1);
   }
 }
     
@@ -53,7 +53,7 @@ Value tail(Value v) {
     return v.data.list->tail;
   } else {
     annotate(v, "Error, calling tail on a non-list value: ");
-    return nil();
+    exit(1);
   }
 }
 
