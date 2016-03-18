@@ -21,6 +21,7 @@ Working:
   - multiply
   - divide
 - non-alphabetical symbols
+- inspect
 - variadic functions
 - repl works on multiline functions
 - cond
