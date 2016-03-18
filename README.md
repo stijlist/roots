@@ -26,12 +26,12 @@ Working:
 - cond
 - program termination with nonzero return in error cases
 
-TODO (in rough dependency order):
-- bootstrap
+TODO:
 - strings
 - garbage collection
+- bootstrap
 
 
-quirks:
+known bugs:
 
-Side-effects in "if" or "cond" forms are undefined behavior.
+Side-effects in "if" or "cond" forms don't work.
