@@ -261,8 +261,8 @@ Value eval(Value arg, Value env) {
       return arg;
     }
   }
-  // returning nil in failure cases until I figure out exception handling
-  return nil();
+  printf("Error, exiting.");
+  exit(1);
 }
 
 Value eval_mutating_env(Value arg, Value* env) {
@@ -342,6 +342,7 @@ ParseResult parselist(char *cursor) {
     return (ParseResult) { ++cursor, nil() };
   } else if (*cursor == '\0') {
     printf("Unterminated '(', stopping parse.");
+    exit(1);
     return (ParseResult) { cursor, nil() };
   } else { 
     ParseResult result = parse(cursor);
@@ -361,7 +362,7 @@ ParseResult parse(char *cursor) {
     return parsenum(cursor);
   } else {
     printf("Problem reading buffer at:\n %s\n", cursor);
-    return (ParseResult) { cursor, nil() };
+    exit(1);
   }
 }
 
@@ -444,6 +445,7 @@ bool balanced(char* expr) {
   for (char *c = expr; *c != '\0' && *c != EOF; c++) {
     if (*c == open_paren) parenlevel++;
     if (*c == close_paren) parenlevel--;
+    if (parenlevel < 0) break;
   }
 
   return parenlevel == 0;

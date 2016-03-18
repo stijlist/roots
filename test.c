@@ -5,6 +5,7 @@ void test_balanced() {
   printf("testing 'balanced' utility function:\n");
   printf("\tshould be true: %s\n", balanced("()") ? "true" : "false");
   printf("\tshould be false: %s\n", balanced("(") ? "true" : "false");
+  printf("\tshould be false: %s\n", balanced("())(") ? "true" : "false");
 }
 
 void test(char *input, char *expected_str) {

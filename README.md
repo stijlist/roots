@@ -24,11 +24,11 @@ Working:
 - variadic functions
 - repl works on multiline functions
 - cond
+- program termination with nonzero return in error cases
 
 TODO (in rough dependency order):
 - bootstrap
 - strings
-- proper error handling / program termination
 - garbage collection
 
 
