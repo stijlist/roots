@@ -28,11 +28,17 @@ Working:
 - program termination with nonzero return in error cases
 
 TODO:
+- bootstrap
 - strings
 - garbage collection
-- bootstrap
 
 
 known bugs:
 
-Side-effects in "if" or "cond" forms don't work.
+Side-effects in "if" or "cond" forms don't work:
+
+```
+  (define l (quote (1 2)))
+  (if (inspect (cons 3 l)) 1 0)
+  (inspect l)
+```
