@@ -78,5 +78,7 @@ int main() {
 
   test("(cond (1 1) ((quote ()) 2))", "1");
   test("(cond ((quote ()) 2) (1 1))", "1");
+
+  test("(let (count (lambda (l) (if (eq l (quote ())) 0 (count (tail l))))) (count (quote (1))))", "0");
   return 0;
 }
