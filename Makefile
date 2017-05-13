@@ -1,12 +1,15 @@
 main:
-	cc roots.c repl.c -o roots
+	cc -g roots.c repl.c -o roots
 
 test:
-	cc roots.c test.c -o test.out
+	cc -g roots.c test.c -o test.out
 	./test.out
 
 run: main
 	./roots
+
+debug-repl: main
+	lldb ./roots
 
 debug:
 	cc -g -c test.c
