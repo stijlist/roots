@@ -42,3 +42,9 @@ Side-effects in "if" or "cond" forms don't work:
   (if (inspect (cons 3 l)) 1 0)
   (inspect l)
 ```
+
+Updated testing strategy:
+
+- input and expected output files
+- shell script that executes the input files with the current version of roots and runs diff on the input and output, printing the filenames of the diffs
+- git precommit hook that updates the diffs
