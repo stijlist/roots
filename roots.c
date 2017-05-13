@@ -261,7 +261,7 @@ Value eval(Value arg, Value env) {
       return arg;
     }
   }
-  printf("Error, exiting.");
+  printf("Error, no matches found for eval, exiting.");
   exit(1);
 }
 
